@@ -1,0 +1,107 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="text_big_30dp">30dip</dimen>
+    <dimen name="text_big_24dp">24dip</dimen>
+    <dimen name="text_big_20dp">20dip</dimen>
+    <dimen name="text_normal_18dp">18dip</dimen>
+    <dimen name="text_15dp">15dip</dimen>
+    <dimen name="text_m_12dp">12dip</dimen>
+
+    <dimen name="text_xm_11dp">11dip</dimen>
+    <dimen name="margin_chat_activity">5dp</dimen>
+    <dimen name="size_avatar">50dip</dimen>
+    <dimen name="padding_news_item">15dp</dimen>
+    <dimen name="margin_news_item">12dp</dimen>
+    <dimen name="padding_news_item_10dp">10dp</dimen>
+
+    <!--dp value-->
+    <dimen name="dip1">1dp</dimen>
+    <dimen name="dip2">2dp</dimen>
+    <dimen name="dip3">3dp</dimen>
+    <dimen name="dip4">4dp</dimen>
+    <dimen name="dip5">5dp</dimen>
+    <dimen name="dip6">6dp</dimen>
+    <dimen name="dip7">7dp</dimen>
+    <dimen name="dip8">8dp</dimen>
+    <dimen name="dip9">9dp</dimen>
+    <dimen name="dip10">10dp</dimen>
+    <dimen name="dip12">12dp</dimen>
+    <dimen name="dip13">13dp</dimen>
+    <dimen name="dip14">14dp</dimen>
+    <dimen name="dip15">15dp</dimen>
+    <dimen name="dip16">16dp</dimen>
+    <dimen name="dip17">17dp</dimen>
+    <dimen name="dip18">18dp</dimen>
+    <dimen name="dip20">20dp</dimen>
+    <dimen name="dip22">22dp</dimen>
+    <dimen name="dip24">24dp</dimen>
+    <dimen name="dip25">25dp</dimen>
+    <dimen name="dip26">26dp</dimen>
+    <dimen name="dip27">27dp</dimen>
+    <dimen name="dip28">28dp</dimen>
+    <dimen name="dip30">30dp</dimen>
+    <dimen name="dip32">32dp</dimen>
+    <dimen name="dip34">34dp</dimen>
+    <dimen name="dip36">36dp</dimen>
+    <dimen name="dip38">38dp</dimen>
+    <dimen name="dip40">40dp</dimen>
+    <dimen name="dip42">42dp</dimen>
+    <dimen name="dip44">44dp</dimen>
+    <dimen name="dip46">46dp</dimen>
+    <dimen name="dip48">48dp</dimen>
+    <dimen name="dip50">50dp</dimen>
+    <dimen name="dip52">52dp</dimen>
+    <dimen name="dip54">54dp</dimen>
+    <dimen name="dip60">60dp</dimen>
+    <dimen name="dip64">64dp</dimen>
+    <dimen name="dip65">65dp</dimen>
+    <dimen name="dip68">68dp</dimen>
+    <dimen name="dip70">70dp</dimen>
+    <dimen name="dip72">72dp</dimen>
+    <dimen name="dip76">76dp</dimen>
+    <dimen name="dip78">78dp</dimen>
+    <dimen name="dip82">82dp</dimen>
+    <dimen name="dip84">84dp</dimen>
+    <dimen name="dip90">90dp</dimen>
+    <dimen name="dip96">96dp</dimen>
+    <dimen name="dip100">100dp</dimen>
+    <dimen name="dip104">104dp</dimen>
+    <dimen name="dip120">120dp</dimen>
+    <dimen name="dip130">130dp</dimen>
+    <dimen name="dip164">164dp</dimen>
+    <dimen name="dip200">200dp</dimen>
+
+    <!--sp value-->
+    <dimen name="sp13">13sp</dimen>
+    <dimen name="sp16">16sp</dimen>
+    <dimen name="sp17">17sp</dimen>
+
+    <!--这里是mainActivity底部条相关的设置-->
+    <!--偷偷的帮你把坑埋上了，不要再踩进去了-->
+    <!--上下间距-->
+    <dimen name="main_tab_padding">7dp</dimen>
+    <dimen name="main_tab_padding_top_4_0">0dp</dimen>
+    <!--drawable padding-->
+    <dimen name="main_tab_drawable_padding">2dp</dimen>
+    <dimen name="main_tab_drawable_padding_4_0">-7dp</dimen>
+    <!--<dimen name="main_tab_drawable_paddingtop_4_0">-2dp</dimen>-->
+    <!--文字大小-->
+    <dimen name="main_tab_text_size">10dp</dimen>
+    <dimen name="main_tab_text_size_new">10dp</dimen>
+    <!--tab的高度-->
+    <dimen name="main_tab_height">50dp</dimen>
+
+    <dimen name="default_status_bar_height">30dp</dimen>
+    <dimen name="title_height">44dp</dimen>
+
+    <dimen name="activity_horizontal_margin_new">16dp</dimen>
+
+    <dimen name="person_horizontal_margin">12dp</dimen>
+
+    <dimen name="white_base_dialog_width">296dp</dimen>
+
+</resources>
