@@ -11,4 +11,10 @@ public class ScreenUtils {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return (int) (displayMetrics.density * dp + 0.5F);
     }
+
+    public static int sp2Px(int sp) {
+        Context context = App.get();
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return (int) (displayMetrics.scaledDensity * sp + 0.5F);
+    }
 }

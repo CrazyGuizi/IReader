@@ -2,9 +2,7 @@ package com.ldg.ireader.bookshelf;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +11,7 @@ import com.ldg.common.adapter.BaseRVAdapter;
 import com.ldg.common.view.BaseFragment;
 import com.ldg.ireader.R;
 import com.ldg.ireader.bookshelf.adapter.BookShelfAdapter;
-import com.ldg.ireader.ui.ReadActivity;
+import com.ldg.ireader.bookshelf.ui.ReadActivity;
 
 import java.util.ArrayList;
 import java.util.List;

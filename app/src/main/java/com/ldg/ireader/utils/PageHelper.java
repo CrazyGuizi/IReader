@@ -6,11 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.ldg.ireader.R;
-import com.ldg.ireader.widgets.PageView;
+import com.ldg.ireader.bookshelf.core.widgets.PageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -243,12 +244,15 @@ public class PageHelper {
     private Bitmap mCurBitmap;
     private Paint mTextPaint;
 
+    public PageHelper() {
+    }
+
     public PageHelper(PageView pageView) {
         mPageView = pageView;
         mTextPaint = new Paint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setTextSize(44);
+        mTextPaint.setTextSize(FONT_SIZE_CONTENT);
         mTextPaint.setColor(Color.BLACK);
         parseText();
     }
@@ -272,6 +276,23 @@ public class PageHelper {
         }
     }
 
+    public StringReader getReader() {
+        StringBuilder builder = new StringBuilder();
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            int i = 0;
+            while (!jsonArray.isNull(i)) {
+                String s = jsonArray.getString(i);
+                builder.append(s);
+                i++;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return new StringReader(builder.toString());
+    }
+
     public Bitmap getCurBitmap() {
         if (mCurBitmap == null) {
             mCurBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.RGB_565);
@@ -280,8 +301,8 @@ public class PageHelper {
         return mCurBitmap;
     }
 
-    public void update() {
-        Canvas canvas = new Canvas(mCurBitmap);
+    public void update(Bitmap bitmap) {
+        Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(mPageView.getResources().getColor(R.color.color_bg_green));
         int startX = MARGIN, startTop = 0;
         int rWidth = mWidth - MARGIN;
@@ -306,6 +327,6 @@ public class PageHelper {
             }
         }
 
-        mPageView.invalidate();
+//        mPageView.invalidate();
     }
 }

@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".bookshelf.ui.ReadActivity">
-
-    <com.ldg.ireader.bookshelf.core.widgets.PageView
-        android:id="@+id/page_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    tools:context=".AudioRecordTest">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
