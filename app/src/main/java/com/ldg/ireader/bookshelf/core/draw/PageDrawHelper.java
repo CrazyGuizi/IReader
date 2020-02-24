@@ -6,19 +6,15 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 
-import com.ldg.ireader.App;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.loader.LoadingStatus;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
 import com.ldg.ireader.bookshelf.core.widgets.PageView;
 import com.ldg.ireader.bookshelf.model.TxtPage;
 
-import java.util.List;
-
 public class PageDrawHelper {
 
     private PageView mReadPage;
-    private PageConfig mPageConfig;
     private TextPaint mTextPaint;
     private Paint mBgPaint;
     private Paint mTitlePaint;
@@ -30,20 +26,13 @@ public class PageDrawHelper {
         mStatus = status;
     }
 
-    public void setPageLoader(PageLoader pageLoader) {
-        mPageLoader = pageLoader;
-    }
-
-    public PageDrawHelper(PageView readPage, PageConfig config) {
-        if (readPage == null) {
+    public PageDrawHelper(PageView readPage, PageLoader pageLoader) {
+        if (readPage == null || pageLoader == null) {
             return;
         }
 
-        if (config == null) {
-            config = new PageConfig.Builder(App.get()).build();
-        }
         mReadPage = readPage;
-        mPageConfig = config;
+        mPageLoader = pageLoader;
         initPaint();
     }
 
@@ -68,58 +57,46 @@ public class PageDrawHelper {
             mTextPaint.setAntiAlias(true);
         }
 
-        if (mPageConfig != null) {
-            mTitlePaint.setColor(mPageConfig.getTextColor());
-            mTitlePaint.setTextSize(mPageConfig.getTitleSize());
+        if (PageConfig.get() != null) {
+            mTitlePaint.setColor(PageConfig.get().getTextColor());
+            mTitlePaint.setTextSize(PageConfig.get().getTitleSize());
 
-            mBgPaint.setColor(mPageConfig.getTextColor());
+            mBgPaint.setColor(PageConfig.get().getTextColor());
 
-            mTextPaint.setColor(mPageConfig.getTextColor());
-            mTextPaint.setTextSize(mPageConfig.getTextSize());
+            mTextPaint.setColor(PageConfig.get().getTextColor());
+            mTextPaint.setTextSize(PageConfig.get().getTextSize());
         }
     }
 
-    public void setDisplaySize(int pageWidth, int pageHeight) {
-        if (mPageConfig.getDisplayWidth() == pageWidth &&
-                mPageConfig.getDisplayHeight() == pageHeight) {
-            return;
+    public void drawCurPage(Bitmap bitmap, boolean isUpdate) {
+        if (!mPageLoader.isPrepare()) {
+            mPageLoader.initData();
         }
-        mPageConfig.setDisplayWidth(pageWidth);
-        mPageConfig.setDisplayHeight(pageHeight);
-        mPageLoader.initData();
+        drawPage(bitmap, isUpdate);
     }
 
-    public void setPageConfig(PageConfig pageConfig) {
-        if (pageConfig != null) {
-            mPageConfig = pageConfig;
-            initPaint();
-        }
-    }
-
-    public boolean drawNext(Bitmap bitmap, boolean update) {
-        TxtPage nextPage = mPageLoader.getNextPage();
-        if (nextPage == null) {
-            return false;
+    public boolean drawNextPage(Bitmap bitmap, boolean isUpdate) {
+        TxtPage page = mPageLoader.getNextPage();
+        if (page != null) {
+            drawPage(bitmap, isUpdate);
         }
 
-        drawPage(bitmap, update);
-        return true;
+        return page != null;
     }
 
-
-    public boolean drawPre(Bitmap bitmap, boolean update) {
+    public boolean drawPrePage(Bitmap bitmap, boolean isUpdate) {
         TxtPage prePage = mPageLoader.getPrePage();
-        if (prePage == null) {
-            return false;
+        if (prePage != null) {
+            drawPage(bitmap, isUpdate);
         }
-        drawPage(bitmap, update);
-        return true;
+
+        return prePage != null;
     }
 
     public void drawPage(Bitmap bitmap, boolean isUpdate) {
         drawBackground(bitmap, isUpdate);
 
-        if (!isUpdate) {
+        if (isUpdate) {
             drawContent(bitmap);
         }
         mReadPage.invalidate();
@@ -128,10 +105,10 @@ public class PageDrawHelper {
     private void drawBackground(Bitmap bgBitmap, boolean isUpdate) {
         Canvas canvas = new Canvas(bgBitmap);
 
-        if (!isUpdate) {
-            canvas.drawColor(mPageConfig.getBgColor());
+        if (isUpdate) {
+            canvas.drawColor(PageConfig.get().getBgColor());
         } else {
-            mBgPaint.setColor(mPageConfig.getBgColor());
+            mBgPaint.setColor(PageConfig.get().getBgColor());
         }
 
     }
@@ -168,30 +145,30 @@ public class PageDrawHelper {
             Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
             float textHeight = fontMetrics.top - fontMetrics.bottom;
             float textWidth = mTextPaint.measureText(tip);
-            float pivotX = (mPageConfig.getDisplayWidth() - textWidth) / 2;
-            float pivotY = (mPageConfig.getDisplayHeight() - textHeight) / 2;
+            float pivotX = (PageConfig.get().getDisplayWidth() - textWidth) / 2;
+            float pivotY = (PageConfig.get().getDisplayHeight() - textHeight) / 2;
             canvas.drawText(tip, pivotX, pivotY, mTextPaint);
             return;
         }
 
-        float top = mPageConfig.getMarginHeight() - mTextPaint.getFontMetrics().top;
+        float top = PageConfig.get().getMarginHeight() - mTextPaint.getFontMetrics().top;
 
         //设置总距离
-        int interval = mPageConfig.getTextInterval() + (int) mTextPaint.getTextSize();
-        int para = mPageConfig.getTextPara() + (int) mTextPaint.getTextSize();
-        int titleInterval = mPageConfig.getTitleInterval() + (int) mTitlePaint.getTextSize();
-        int titlePara = mPageConfig.getTitlePara() + (int) mTextPaint.getTextSize();
+        int interval = PageConfig.get().getTextInterval() + (int) mTextPaint.getTextSize();
+        int para = PageConfig.get().getTextPara() + (int) mTextPaint.getTextSize();
+        int titleInterval = PageConfig.get().getTitleInterval() + (int) mTitlePaint.getTextSize();
+        int titlePara = PageConfig.get().getTitlePara() + (int) mTextPaint.getTextSize();
         String str = null;
 
         for (int i = 0; i < curPage.titleLines; i++) {
             str = curPage.lines.get(0);
             //设置顶部间距
             if (i == 0) {
-                top += mPageConfig.getTitlePara();
+                top += PageConfig.get().getTitlePara();
             }
 
             //计算文字显示的起始点
-            int start = (int) (mPageConfig.getDisplayWidth() - mTitlePaint.measureText(str)) / 2;
+            int start = (int) (PageConfig.get().getDisplayWidth() - mTitlePaint.measureText(str)) / 2;
             //进行绘制
             canvas.drawText(str, start, top, mTitlePaint);
 
@@ -208,7 +185,7 @@ public class PageDrawHelper {
         for (int i = curPage.titleLines; i < curPage.lines.size(); ++i) {
             str = curPage.lines.get(i);
 
-            canvas.drawText(str, mPageConfig.getMarginWidth(), top, mTextPaint);
+            canvas.drawText(str, PageConfig.get().getMarginWidth(), top, mTextPaint);
             if (str.endsWith("\n")) {
                 top += para;
             } else {

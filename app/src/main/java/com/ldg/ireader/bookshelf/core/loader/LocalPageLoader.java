@@ -13,6 +13,11 @@ public class LocalPageLoader extends PageLoader {
     }
 
     @Override
+    public void refreshChapterList() {
+
+    }
+
+    @Override
     protected boolean hasChapterData(TxtChapter chapter) {
         return false;
     }

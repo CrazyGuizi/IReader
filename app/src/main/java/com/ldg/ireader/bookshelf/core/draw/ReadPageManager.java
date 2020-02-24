@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import com.ldg.ireader.bookshelf.core.anim.CoverAnimation;
+import com.ldg.ireader.bookshelf.core.anim.NonePageAnim;
 import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.loader.LoadingStatus;
@@ -21,18 +22,17 @@ public class ReadPageManager implements IPageController {
     private PageAnimation mPageAnimation;
     private PageLoader mPageLoader;
     private PageDrawHelper mPageDrawHelper;
-    private PageConfig mPageConfig;
 
     // 动画监听类
     private PageAnimation.OnPageChangeListener mPageAnimListener = new PageAnimation.OnPageChangeListener() {
         @Override
         public boolean hasPrev() {
-            return true;
+            return mPageDrawHelper.drawPrePage(mPageAnimation.getNextBitmap(), true);
         }
 
         @Override
         public boolean hasNext() {
-            return true;
+            return mPageDrawHelper.drawNextPage(mPageAnimation.getNextBitmap(), true);
         }
 
         @Override
@@ -50,7 +50,7 @@ public class ReadPageManager implements IPageController {
             @Override
             public void updateStatus(LoadingStatus status) {
                 mPageDrawHelper.setStatus(status);
-                mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), false);
+                mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), true);
             }
         });
     }
@@ -70,16 +70,13 @@ public class ReadPageManager implements IPageController {
             return;
         }
         mReadPage = pageView;
-        mPageConfig = new PageConfig.Builder(mReadPage.getContext()).build();
-        mPageDrawHelper = new PageDrawHelper(mReadPage, mPageConfig);
-        mPageDrawHelper.setPageLoader(mPageLoader);
-        mPageLoader.setPageConfig(mPageConfig);
+        mPageDrawHelper = new PageDrawHelper(mReadPage, mPageLoader);
     }
 
     private PageAnimation getAnimation(int width, int height) {
         PageAnimation animation = null;
         if (width != 0 && height != 0) {
-            switch (mPageConfig.getPageMode()) {
+            switch (PageConfig.get().getPageMode()) {
                 case COVER:
                     animation = new CoverAnimation(width, height,
                             mReadPage, mPageAnimListener);
@@ -92,7 +89,7 @@ public class ReadPageManager implements IPageController {
                     break;
 
                 default:
-
+                    animation = new NonePageAnim(width, height, mReadPage, mPageAnimListener);
                     break;
             }
         }
@@ -104,9 +101,10 @@ public class ReadPageManager implements IPageController {
         if (pageHeight == 0 || pageHeight == 0) {
             return;
         }
+        PageConfig.get().setDisplayWidth(pageWidth).setDisplayHeight(pageHeight);
         mPageAnimation = getAnimation(pageWidth, pageHeight);
-        mPageDrawHelper.setDisplaySize(pageWidth, pageHeight);
-        mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), false);
+        mPageLoader.initData();
+        mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), true);
     }
 
     @Override
@@ -118,7 +116,9 @@ public class ReadPageManager implements IPageController {
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-
+        if (mPageAnimation != null) {
+            mPageAnimation.onTouchEvent(event);
+        }
     }
 
     @Override

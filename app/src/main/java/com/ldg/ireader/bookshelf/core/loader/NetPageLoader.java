@@ -16,6 +16,11 @@ public class NetPageLoader extends PageLoader {
     }
 
     @Override
+    public void refreshChapterList() {
+
+    }
+
+    @Override
     protected boolean hasChapterData(TxtChapter chapter) {
         return true;
     }

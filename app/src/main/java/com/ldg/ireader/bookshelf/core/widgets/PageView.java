@@ -175,50 +175,7 @@ public class PageView extends View {
 //
 //        return mPageLoader;
 //    }
-//
-//    public void setPageMode(PageMode pageMode) {
-//        mPageMode = pageMode;
-//        //视图未初始化的时候，禁止调用
-//        if (mWidth == 0 || mHeight == 0) return;
-//
-//        switch (mPageMode) {
-//            case NONE:
-//                mPageAnim = new NonePageAnim(mWidth, mHeight, this, mPageAnimListener);
-//                break;
-//            case SLIDE:
-//                mPageAnim = new CoverAnimation(mWidth, mHeight, this, mPageAnimListener);
-//                break;
-//        }
-//    }
-//
-//    public void setBgColor(int bgColor) {
-//        mBgColor = bgColor;
-//    }
-//
-//    public void drawCurPage(boolean isUpdate) {
-//        if (!mIsPrepare) {
-//            return;
-//        }
-//
-//        mPageLoader.drawPage(getNextBitmap(), isUpdate);
-//    }
-//
-//    private Bitmap getNextBitmap() {
-//        if (mPageAnim != null) {
-//            return mPageAnim.getNextBitmap();
-//        }
-//        return null;
-//    }
-//
-//    public Bitmap getBgBitmap() {
-//        if (mPageAnim == null) return null;
-//        return mPageAnim.getBgBitmap();
-//    }
-//
-//    public boolean isPrepare() {
-//        return mIsPrepare;
-//    }
-//
+
 //    public void changePage() {
 //        if (mPageAnim != null && mPageAnim instanceof HorizonPageAnim) {
 //            ((HorizonPageAnim) mPageAnim).changePage();

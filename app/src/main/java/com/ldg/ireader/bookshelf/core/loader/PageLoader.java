@@ -1,10 +1,5 @@
 package com.ldg.ireader.bookshelf.core.loader;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.text.TextPaint;
 
 import com.ldg.ireader.App;
@@ -13,7 +8,6 @@ import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.TxtChapter;
 import com.ldg.ireader.bookshelf.model.TxtPage;
 import com.ldg.ireader.utils.StringUtils;
-import com.ldg.ireader.bookshelf.core.widgets.PageView;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -26,15 +20,17 @@ public abstract class PageLoader {
     private final ArrayList<TxtChapter> mChapterList;
     private BookModel mBookModel;
     private boolean isChapterOpen;
-    private boolean isFirstOpen;
+    private boolean isFirstOpen = true;
 
-    private TxtPage mCurPage;
-    private TxtPage mCancelPage;
-    private List<TxtPage> mCurPageList;
+    protected TxtPage mCurPage;
+    protected TxtPage mCancelPage;
+    protected List<TxtPage> mCurPageList;
+    protected List<TxtPage> mPrePageList;
+    protected List<TxtPage> mNextPageList;
     // 当前章
     protected int mCurChapterPos = 0;
+    protected int mLastChapterPos;
     private OnLoadingListener mOnLoadingListener;
-    private PageConfig mPageConfig;
     private LoadingStatus mStatus;
 
     public void setOnLoadingListener(OnLoadingListener onLoadingListener) {
@@ -46,11 +42,6 @@ public abstract class PageLoader {
         mChapterList = new ArrayList<>(1);
     }
 
-
-    public void setPageConfig(PageConfig pageConfig) {
-        mPageConfig = pageConfig;
-    }
-
     public TxtPage getCurPage() {
         return mCurPage;
     }
@@ -59,18 +50,27 @@ public abstract class PageLoader {
         return mCurPageList;
     }
 
+    public boolean isPrepare() {
+        return !isFirstOpen;
+    }
+
     public void initData() {
-        if (!isFirstOpen) {
-            // 打开书籍
+        if (isFirstOpen) {
             openChapter();
         }
     }
 
+    public void initDataForced() {
+        isFirstOpen = true;
+        initData();
+    }
+
     private void openChapter() {
         isFirstOpen = false;
-        if (parseCurChapter()) {
+        if (parseChapter()) {
             // 如果章节从未打开
             if (!isChapterOpen) {
+                // todo 记录书本当前阅读的位置
                 int position = 0;
 
                 // 防止记录页的页号，大于当前最大页号
@@ -94,15 +94,18 @@ public abstract class PageLoader {
     }
 
 
-    /**
-     * @return:获取初始显示的页面
-     */
     public TxtPage getCurPage(int pos) {
         return mCurPageList.get(pos);
     }
 
     public TxtPage getNextPage() {
         if (mCurPage.position + 1 >= mCurPageList.size()) {
+            if (mNextPageList != null && !mNextPageList.isEmpty()) {
+                mPrePageList = mCurPageList;
+                mCurPageList = mNextPageList;
+                preLoadNextChapter();
+                return mCurPage = mCurPageList.get(0);
+            }
             return null;
         }
         mCurPage = mCurPageList.get(mCurPage.position + 1);
@@ -111,18 +114,33 @@ public abstract class PageLoader {
 
     public TxtPage getPrePage() {
         if (mCurPage.position - 1 < 0) {
+            if (mPrePageList != null && !mPrePageList.isEmpty()) {
+                mNextPageList = mCurPageList;
+                mCurPageList = mPrePageList;
+                // todo 解析前一章
+                mPrePageList = null;
+                return mCurPage = mCurPageList.get(mCurPageList.size() - 1);
+            }
             return null;
         }
         mCurPage = mCurPageList.get(mCurPage.position - 1);
         return mCurPage;
     }
 
-    private boolean parseCurChapter() {
+    private boolean parseChapter() {
         // 解析数据
         dealLoadPageList(mCurChapterPos);
         // 预加载下一页面
-//        preLoadNextChapter();
+        preLoadNextChapter();
         return mCurPageList != null ? true : false;
+    }
+
+    private void preLoadNextChapter() {
+        int nextChapter = mCurChapterPos + 1;
+
+        mLastChapterPos = mCurChapterPos;
+        mCurChapterPos = nextChapter;
+        mNextPageList = new ArrayList<>(mCurPageList);
     }
 
     private void dealLoadPageList(int chapterPos) {
@@ -183,17 +201,17 @@ public abstract class PageLoader {
      */
     private List<TxtPage> loadPages(TxtChapter chapter, BufferedReader br) {
         TextPaint titlePaint = new TextPaint();
-        titlePaint.setTextSize(mPageConfig.getTitleSize());
+        titlePaint.setTextSize(PageConfig.get().getTitleSize());
 
         // 绘制页面内容的画笔
         TextPaint textPaint = new TextPaint();
-        textPaint.setTextSize(mPageConfig.getTextSize());
+        textPaint.setTextSize(PageConfig.get().getTextSize());
 
         //生成的页面
         List<TxtPage> pages = new ArrayList<>();
         //使用流的方式加载
         List<String> lines = new ArrayList<>();
-        int rHeight = mPageConfig.getVisibleHeight();
+        int rHeight = PageConfig.get().getVisibleHeight();
         int titleLinesCount = 0;
         boolean showTitle = true; // 是否展示标题
         String paragraph = chapter.getTitle();//默认展示标题
@@ -208,7 +226,7 @@ public abstract class PageLoader {
                     paragraph = StringUtils.halfToFull("  " + paragraph + "\n");
                 } else {
                     //设置 title 的顶部间距
-                    rHeight -= mPageConfig.getTitlePara();
+                    rHeight -= PageConfig.get().getTitlePara();
                 }
                 int wordCount = 0;
                 String subStr = null;
@@ -230,7 +248,7 @@ public abstract class PageLoader {
                         pages.add(page);
                         // 重置Lines
                         lines.clear();
-                        rHeight = mPageConfig.getVisibleHeight();
+                        rHeight = PageConfig.get().getVisibleHeight();
                         titleLinesCount = 0;
 
                         continue;
@@ -239,10 +257,10 @@ public abstract class PageLoader {
                     //测量一行占用的字节数
                     if (showTitle) {
                         wordCount = titlePaint.breakText(paragraph,
-                                true, mPageConfig.getVisibleWidth(), null);
+                                true, PageConfig.get().getVisibleWidth(), null);
                     } else {
                         wordCount = textPaint.breakText(paragraph,
-                                true, mPageConfig.getVisibleWidth(), null);
+                                true, PageConfig.get().getVisibleWidth(), null);
                     }
 
                     subStr = paragraph.substring(0, wordCount);
@@ -253,9 +271,9 @@ public abstract class PageLoader {
                         //设置段落间距
                         if (showTitle) {
                             titleLinesCount += 1;
-                            rHeight -= mPageConfig.getTitleInterval();
+                            rHeight -= PageConfig.get().getTitleInterval();
                         } else {
-                            rHeight -= mPageConfig.getTextInterval();
+                            rHeight -= PageConfig.get().getTextInterval();
                         }
                     }
                     //裁剪
@@ -264,11 +282,11 @@ public abstract class PageLoader {
 
                 //增加段落的间距
                 if (!showTitle && lines.size() != 0) {
-                    rHeight = rHeight - mPageConfig.getTextPara() + mPageConfig.getTextInterval();
+                    rHeight = rHeight - PageConfig.get().getTextPara() + PageConfig.get().getTextInterval();
                 }
 
                 if (showTitle) {
-                    rHeight = rHeight - mPageConfig.getTitlePara() + mPageConfig.getTitleInterval();
+                    rHeight = rHeight - PageConfig.get().getTitlePara() + PageConfig.get().getTitleInterval();
                     showTitle = false;
                 }
             }
@@ -300,6 +318,11 @@ public abstract class PageLoader {
         return pages;
     }
 
+
+    /**
+     * 刷新章节列表
+     */
+    public abstract void refreshChapterList();
 
     /**
      * 章节数据是否存在
