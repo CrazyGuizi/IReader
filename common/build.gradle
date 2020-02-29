@@ -39,4 +39,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
     implementation project(path: ':httpprocessor')
     annotationProcessor project(path: ':httpprocessor')
+    implementation("com.squareup.okhttp3:okhttp:4.4.0")
 }
