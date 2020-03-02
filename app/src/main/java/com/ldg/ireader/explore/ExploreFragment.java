@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.ldg.common.view.BaseFragment;
 import com.ldg.ireader.R;
+import com.ldg.ireader.http.HttpUtils;
 
 
 public class ExploreFragment extends BaseFragment {

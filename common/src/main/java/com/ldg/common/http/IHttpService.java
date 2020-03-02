@@ -9,6 +9,11 @@ public interface IHttpService {
 
     void exec(HttpMethod method, String url, Map<String, String> headers, List<Pair<String, String>> params);
 
+    void exec(HttpMethod method, String url, Map<String, String> headers, List<Pair<String, String>> params, HttpHandler handler);
+
     void execSync(HttpMethod method, String url, Map<String, String> headers, List<Pair<String, String>> params);
 
+    void execSync(HttpMethod method, String url, Map<String, String> headers, List<Pair<String, String>> params, HttpHandler handler);
+
+    HttpConfig getConfig();
 }
