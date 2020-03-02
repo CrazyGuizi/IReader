@@ -32,7 +32,7 @@ public abstract class HttpManager implements IHttpService {
 
     public static final HttpManager get() {
         if (sHttpManager == null) {
-            synchronized (sHttpManager) {
+            synchronized (HttpManager.class) {
                 if (sHttpManager == null) {
                     sHttpManager = new HttpManagerImpl();
                 }

@@ -13,6 +13,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ module : 'common' ]
+            }
+        }
     }
 
     buildTypes {
@@ -37,7 +42,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.material:material:1.2.0-alpha04'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
-    implementation project(path: ':httpprocessor')
+    api project(path: ':httpprocessor')
     annotationProcessor project(path: ':httpprocessor')
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 }

@@ -11,6 +11,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ module : 'app' ]
+            }
+        }
     }
     buildTypes {
         release {
@@ -37,5 +42,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.material:material:1.2.0-alpha04'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
-    implementation project(path: ':common')
+    api project(path: ':common')
+    annotationProcessor project(path: ':httpprocessor')
 }
