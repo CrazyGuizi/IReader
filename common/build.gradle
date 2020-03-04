@@ -45,4 +45,5 @@ dependencies {
     api project(path: ':httpprocessor')
     annotationProcessor project(path: ':httpprocessor')
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
+    api 'com.google.code.gson:gson:2.8.6'
 }

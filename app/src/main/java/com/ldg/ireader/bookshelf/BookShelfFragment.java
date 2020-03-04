@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ldg.common.adapter.BaseRVAdapter;
+import com.ldg.common.util.PairUtils;
 import com.ldg.common.view.BaseFragment;
 import com.ldg.ireader.R;
 import com.ldg.ireader.api.ApiConstants;

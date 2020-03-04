@@ -3,7 +3,7 @@ package com.ldg.ireader.api;
 
 public class ApiConstants {
 
-    public static final String HOST = "www.ldg.com/";
+    public static final String HOST = "http://127.0.0.1:5000/";
 
     /************************************* request Code *************************************/
 
@@ -11,5 +11,5 @@ public class ApiConstants {
 
     /************************************* request Url *************************************/
 
-    public static final String URL_GET_MY_BOOK_INFO = HOST + "book/my";
+    public static final String URL_GET_MY_BOOK_INFO = HOST + "novel/my";
 }

@@ -17,4 +17,12 @@ public class HttpUtils {
             HttpManager.get().exec(HttpMethod.GET, response.url(), null, params);
         }
     }
+
+
+    public static void post(int requestCode, List<Pair<String, String>> params) {
+        Response response = HttpApiManager.getResponse(requestCode);
+        if (response != null) {
+            HttpManager.get().exec(HttpMethod.POST, response.url(), null, params);
+        }
+    }
 }
