@@ -7,10 +7,14 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.ldg.ireader.bookshelf.core.draw.IPageController;
+
 public abstract class BasePageView extends View {
 
     protected int mWidth, mHeight;
     protected Bitmap mCurBitmap, mNextBitmap;
+
+    protected IPageController mPageController;
 
     public BasePageView(Context context) {
         this(context, null);
@@ -27,6 +31,14 @@ public abstract class BasePageView extends View {
 
     protected abstract void initView();
 
+    public void setCurBitmap(Bitmap curBitmap) {
+        mCurBitmap = curBitmap;
+    }
+
+    public void setNextBitmap(Bitmap nextBitmap) {
+        mNextBitmap = nextBitmap;
+    }
+
     public Bitmap getCurBitmap() {
         return mCurBitmap;
     }
@@ -41,6 +53,11 @@ public abstract class BasePageView extends View {
         mNextBitmap = change;
     }
 
+    public void setPageController(IPageController pageController) {
+        mPageController = pageController;
+        mPageController.attachView(this);
+        requestLayout();
+    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

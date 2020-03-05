@@ -54,10 +54,6 @@ public abstract class PageAnimation {
 
     public abstract void draw(Canvas canvas);
 
-    public abstract Bitmap getNextBitmap();
-
-    public abstract Bitmap getBgBitmap();
-
     public abstract void onTouchEvent(MotionEvent event);
 
     public interface OnPageChangeListener {

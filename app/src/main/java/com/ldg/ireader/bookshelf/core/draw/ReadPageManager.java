@@ -12,13 +12,13 @@ import com.ldg.ireader.bookshelf.core.loader.LocalPageLoader;
 import com.ldg.ireader.bookshelf.core.loader.NetPageLoader;
 import com.ldg.ireader.bookshelf.core.loader.OnLoadingListener;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
-import com.ldg.ireader.bookshelf.core.widgets.PageView;
+import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 import com.ldg.ireader.bookshelf.model.BookModel;
 
 public class ReadPageManager implements IPageController {
 
     // 阅读view
-    private PageView mReadPage;
+    private BasePageView mReadPage;
     private PageAnimation mPageAnimation;
     private PageLoader mPageLoader;
     private PageDrawHelper mPageDrawHelper;
@@ -27,12 +27,12 @@ public class ReadPageManager implements IPageController {
     private PageAnimation.OnPageChangeListener mPageAnimListener = new PageAnimation.OnPageChangeListener() {
         @Override
         public boolean hasPrev() {
-            return mPageDrawHelper.drawPrePage(mPageAnimation.getNextBitmap(), true);
+            return mPageDrawHelper.drawPrePage(true);
         }
 
         @Override
         public boolean hasNext() {
-            return mPageDrawHelper.drawNextPage(mPageAnimation.getNextBitmap(), true);
+            return mPageDrawHelper.drawNextPage(true);
         }
 
         @Override
@@ -50,7 +50,7 @@ public class ReadPageManager implements IPageController {
             @Override
             public void updateStatus(LoadingStatus status) {
                 mPageDrawHelper.setStatus(status);
-                mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), true);
+                mPageDrawHelper.drawPage(true);
             }
         });
     }
@@ -65,7 +65,7 @@ public class ReadPageManager implements IPageController {
         return pageLoader;
     }
 
-    public void attachView(PageView pageView) {
+    public void attachView(BasePageView pageView) {
         if (pageView == null) {
             return;
         }
@@ -104,7 +104,7 @@ public class ReadPageManager implements IPageController {
         PageConfig.get().setDisplayWidth(pageWidth).setDisplayHeight(pageHeight);
         mPageAnimation = getAnimation(pageWidth, pageHeight);
         mPageLoader.initData();
-        mPageDrawHelper.drawPage(mPageAnimation.getNextBitmap(), true);
+        mPageDrawHelper.drawPage(true);
     }
 
     @Override

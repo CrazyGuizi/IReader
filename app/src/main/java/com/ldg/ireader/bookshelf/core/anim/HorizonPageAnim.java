@@ -33,7 +33,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
             drawMove(canvas);
         } else {
             if (mIsCancel) {
-                mNextBitmap = mCurBitmap.copy(Bitmap.Config.RGB_565, true);
+                mPageView.setNextBitmap(mPageView.getCurBitmap().copy(Bitmap.Config.RGB_565, true));
             }
             drawStatic(canvas);
         }
@@ -101,16 +101,6 @@ public abstract class HorizonPageAnim extends PageAnimation {
         mLastX = x;
         mLastY = y;
 
-    }
-
-    @Override
-    public Bitmap getBgBitmap() {
-        return mNextBitmap;
-    }
-
-    @Override
-    public Bitmap getNextBitmap() {
-        return mNextBitmap;
     }
 
     public abstract void drawMove(Canvas canvas);

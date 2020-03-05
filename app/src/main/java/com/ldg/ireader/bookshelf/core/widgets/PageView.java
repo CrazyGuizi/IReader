@@ -1,10 +1,7 @@
 package com.ldg.ireader.bookshelf.core.widgets;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -13,14 +10,10 @@ import android.view.ViewConfiguration;
 
 import androidx.annotation.Nullable;
 
-import com.ldg.common.log.LogUtil;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
-import com.ldg.ireader.bookshelf.core.draw.IPageController;
 
 public class PageView extends BasePageView {
 
-
-    private IPageController mPageController;
     private Rect mCenterArea;
     private int mDownX, mDownY;
     private ViewConfiguration mViewConfiguration;
@@ -31,10 +24,12 @@ public class PageView extends BasePageView {
         super(context);
     }
 
-    public void setPageController(IPageController pageController) {
-        mPageController = pageController;
-        mPageController.attachView(this);
-        requestLayout();
+    public PageView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public PageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     protected void initView() {

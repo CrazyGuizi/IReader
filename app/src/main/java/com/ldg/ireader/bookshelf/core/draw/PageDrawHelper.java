@@ -9,12 +9,12 @@ import android.text.TextPaint;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.loader.LoadingStatus;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
-import com.ldg.ireader.bookshelf.core.widgets.PageView;
+import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 import com.ldg.ireader.bookshelf.model.TxtPage;
 
 public class PageDrawHelper {
 
-    private PageView mReadPage;
+    private BasePageView mReadPage;
     private TextPaint mTextPaint;
     private Paint mBgPaint;
     private Paint mTitlePaint;
@@ -26,7 +26,7 @@ public class PageDrawHelper {
         mStatus = status;
     }
 
-    public PageDrawHelper(PageView readPage, PageLoader pageLoader) {
+    public PageDrawHelper(BasePageView readPage, PageLoader pageLoader) {
         if (readPage == null || pageLoader == null) {
             return;
         }
@@ -72,28 +72,29 @@ public class PageDrawHelper {
         if (!mPageLoader.isPrepare()) {
             mPageLoader.initData();
         }
-        drawPage(bitmap, isUpdate);
+        drawPage(isUpdate);
     }
 
-    public boolean drawNextPage(Bitmap bitmap, boolean isUpdate) {
+    public boolean drawNextPage(boolean isUpdate) {
         TxtPage page = mPageLoader.getNextPage();
         if (page != null) {
-            drawPage(bitmap, isUpdate);
+            drawPage(isUpdate);
         }
 
         return page != null;
     }
 
-    public boolean drawPrePage(Bitmap bitmap, boolean isUpdate) {
+    public boolean drawPrePage(boolean isUpdate) {
         TxtPage prePage = mPageLoader.getPrePage();
         if (prePage != null) {
-            drawPage(bitmap, isUpdate);
+            drawPage(isUpdate);
         }
 
         return prePage != null;
     }
 
-    public void drawPage(Bitmap bitmap, boolean isUpdate) {
+    public void drawPage(boolean isUpdate) {
+        Bitmap bitmap = mReadPage.getNextBitmap();
         drawBackground(bitmap, isUpdate);
 
         if (isUpdate) {

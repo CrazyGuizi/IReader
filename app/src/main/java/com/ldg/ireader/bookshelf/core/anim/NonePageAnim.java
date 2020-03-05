@@ -18,18 +18,18 @@ public class NonePageAnim extends HorizonPageAnim {
     @Override
     public void drawMove(Canvas canvas) {
         if (mIsCancel) {
-            canvas.drawBitmap(mCurBitmap, 0, 0, null);
+            canvas.drawBitmap(mPageView.getCurBitmap(), 0, 0, null);
         } else {
-            canvas.drawBitmap(mNextBitmap, 0, 0, null);
+            canvas.drawBitmap(mPageView.getNextBitmap(), 0, 0, null);
         }
     }
 
     @Override
     public void drawStatic(Canvas canvas) {
         if (mIsCancel) {
-            canvas.drawBitmap(mCurBitmap, 0, 0, null);
+            canvas.drawBitmap(mPageView.getCurBitmap(), 0, 0, null);
         } else {
-            canvas.drawBitmap(mNextBitmap, 0, 0, null);
+            canvas.drawBitmap(mPageView.getNextBitmap(), 0, 0, null);
         }
     }
 }
