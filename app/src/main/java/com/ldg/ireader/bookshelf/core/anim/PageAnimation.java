@@ -3,10 +3,11 @@ package com.ldg.ireader.bookshelf.core.anim;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
+
+import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public abstract class PageAnimation {
 
@@ -22,18 +23,18 @@ public abstract class PageAnimation {
     protected int mTouchSlop;
 
     //正在使用的View
-    protected View mView;
+    protected BasePageView mPageView;
 
     //滑动装置
     protected Scroller mScroller;
     //监听器
     protected OnPageChangeListener mListener;
 
-    public PageAnimation(int w, int h, View view, OnPageChangeListener listener){
-        this(w, h, 0, 0, view,listener);
+    public PageAnimation(int w, int h, BasePageView pageView, OnPageChangeListener listener){
+        this(w, h, 0, 0, pageView,listener);
     }
 
-    public PageAnimation(int w, int h, int marginWidth, int marginHeight, View view, OnPageChangeListener listener) {
+    public PageAnimation(int w, int h, int marginWidth, int marginHeight, BasePageView pageView, OnPageChangeListener listener) {
         mScreenWidth = w;
         mScreenHeight = h;
 
@@ -43,12 +44,12 @@ public abstract class PageAnimation {
         mViewWidth = mScreenWidth - mMarginWidth * 2;
         mViewHeight = mScreenHeight - mMarginHeight * 2;
 
-        mView = view;
+        mPageView = pageView;
         mListener = listener;
 
-        mScroller = new Scroller(mView.getContext(), new LinearInterpolator());
+        mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
 
-        mTouchSlop = ViewConfiguration.get(mView.getContext()).getScaledTouchSlop();
+        mTouchSlop = ViewConfiguration.get(mPageView.getContext()).getScaledTouchSlop();
     }
 
     public abstract void draw(Canvas canvas);

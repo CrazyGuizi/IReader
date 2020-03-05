@@ -3,36 +3,27 @@ package com.ldg.ireader.bookshelf.core.anim;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.ldg.common.log.LogUtil;
+import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public abstract class HorizonPageAnim extends PageAnimation {
     protected boolean mIsRuning;
     protected boolean mIsCancel;
     protected boolean mIsMoving;
-    protected Bitmap mNextBitmap;
-    protected Bitmap mCurBitmap;
+//    protected Bitmap mNextBitmap;
+//    protected Bitmap mCurBitmap;
     protected int mLastX, mLastY;
     protected int mMoveX, mMoveY;
     private boolean mHasPrev, mHasNext, mIsToNext;
 
 
-    public HorizonPageAnim(int w, int h, View view, OnPageChangeListener listener) {
+    public HorizonPageAnim(int w, int h, BasePageView view, OnPageChangeListener listener) {
         this(w, h, 0, 0, view, listener);
     }
 
-    public HorizonPageAnim(int w, int h, int marginWidth, int marginHeight, View view, OnPageChangeListener listener) {
+    public HorizonPageAnim(int w, int h, int marginWidth, int marginHeight, BasePageView view, OnPageChangeListener listener) {
         super(w, h, marginWidth, marginHeight, view, listener);
-
-        mCurBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
-        mNextBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
-    }
-
-    public void changePage() {
-        Bitmap bitmap = mNextBitmap;
-        mNextBitmap = mCurBitmap;
-        mCurBitmap = bitmap;
     }
 
 
@@ -86,7 +77,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
                 mIsRuning = true;
                 mMoveX = x;
                 mMoveY = y;
-                mView.invalidate();
+                mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 if (!mIsMoving) {
@@ -102,7 +93,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
                 mIsRuning = false;
                 mMoveX = 0;
                 mMoveY = 0;
-                mView.invalidate();
+                mPageView.invalidate();
                 break;
 
         }

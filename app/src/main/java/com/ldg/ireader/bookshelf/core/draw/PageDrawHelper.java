@@ -97,7 +97,7 @@ public class PageDrawHelper {
         drawBackground(bitmap, isUpdate);
 
         if (isUpdate) {
-            drawContent(bitmap);
+            drawContent(bitmap, mPageLoader.getCurPage());
         }
         mReadPage.invalidate();
     }
@@ -113,9 +113,8 @@ public class PageDrawHelper {
 
     }
 
-    private void drawContent(Bitmap bitmap) {
+    private void drawContent(Bitmap bitmap, TxtPage curPage) {
         Canvas canvas = new Canvas(bitmap);
-        TxtPage curPage = mPageLoader.getCurPage();
 
         if (mStatus != LoadingStatus.STATUS_FINISH) {
             //绘制字体
@@ -148,6 +147,10 @@ public class PageDrawHelper {
             float pivotX = (PageConfig.get().getDisplayWidth() - textWidth) / 2;
             float pivotY = (PageConfig.get().getDisplayHeight() - textHeight) / 2;
             canvas.drawText(tip, pivotX, pivotY, mTextPaint);
+            return;
+        }
+
+        if (curPage == null) {
             return;
         }
 
