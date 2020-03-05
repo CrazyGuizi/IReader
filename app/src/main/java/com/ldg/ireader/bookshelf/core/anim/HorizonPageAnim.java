@@ -8,11 +8,9 @@ import com.ldg.common.log.LogUtil;
 import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public abstract class HorizonPageAnim extends PageAnimation {
-    protected boolean mIsRuning;
+    protected boolean mCanMove;
     protected boolean mIsCancel;
     protected boolean mIsMoving;
-//    protected Bitmap mNextBitmap;
-//    protected Bitmap mCurBitmap;
     protected int mLastX, mLastY;
     protected int mMoveX, mMoveY;
     private boolean mHasPrev, mHasNext, mIsToNext;
@@ -29,12 +27,12 @@ public abstract class HorizonPageAnim extends PageAnimation {
 
     @Override
     public void draw(Canvas canvas) {
-        if (mIsRuning) {
+        if (mIsMoving) {
             drawMove(canvas);
         } else {
-            if (mIsCancel) {
-                mPageView.setNextBitmap(mPageView.getCurBitmap().copy(Bitmap.Config.RGB_565, true));
-            }
+//            if (mIsCancel) {
+//                mPageView.setNextBitmap(mPageView.getCurBitmap().copy(Bitmap.Config.RGB_565, true));
+//            }
             drawStatic(canvas);
         }
     }
@@ -46,18 +44,18 @@ public abstract class HorizonPageAnim extends PageAnimation {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsRuning = false;
+                mIsCancel = false;
+                mCanMove = false;
                 mIsMoving = false;
                 mMoveX = 0;
                 mMoveY = 0;
-                LogUtil.d("down");
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!mIsMoving && Math.abs(x - mLastX) >= mTouchSlop) {
-                    mIsMoving = true;
+                if (!mCanMove && Math.abs(x - mLastX) >= mTouchSlop) {
+                    mCanMove = true;
                 }
 
-                if (mIsMoving) {
+                if (mCanMove) {
                     if (mMoveX == 0 && mMoveY == 0) {
                         if (mIsToNext = (x - mLastX < 0)) {
                             mHasNext = mListener.hasNext();
@@ -74,13 +72,13 @@ public abstract class HorizonPageAnim extends PageAnimation {
                         mIsCancel = mIsToNext ? x - mMoveX > 0 : x - mMoveX < 0;
                     }
                 }
-                mIsRuning = true;
+                mIsMoving = true;
                 mMoveX = x;
                 mMoveY = y;
                 mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                if (!mIsMoving) {
+                if (!mCanMove) {
                     mIsToNext = x > mViewWidth / 2;
 
                     if (mIsToNext) {
@@ -90,7 +88,8 @@ public abstract class HorizonPageAnim extends PageAnimation {
                     }
                 }
 
-                mIsRuning = false;
+                mCanMove = false;
+                mIsMoving = false;
                 mMoveX = 0;
                 mMoveY = 0;
                 mPageView.invalidate();
