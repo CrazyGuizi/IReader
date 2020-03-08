@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +23,7 @@ public abstract class BaseFragment extends Fragment {
             if (mRoot == null) {
                 mRoot = inflater.inflate(layoutView, container, false);
                 initWidgets();
+                createPresenter();
                 bindData();
             } else {
                 ViewGroup parent = (ViewGroup) mRoot.getParent();
@@ -35,10 +35,11 @@ public abstract class BaseFragment extends Fragment {
         return mRoot;
     }
 
-
     protected abstract int getLayoutView();
 
     protected abstract void initWidgets();
+
+    protected void createPresenter() {}
 
     protected abstract void bindData();
 }

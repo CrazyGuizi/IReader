@@ -3,6 +3,7 @@ package com.ldg.ireader.bookshelf.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class BookModel implements Serializable {
     private static final long serialVersionUID = -935820639380721547L;
@@ -23,6 +24,8 @@ public class BookModel implements Serializable {
     private String author;
     @SerializedName("desc")
     private String description;
+    @SerializedName("chapters")
+    private List<ChapterModel> chapters;
 
     private boolean isLocal;
 
@@ -96,5 +99,13 @@ public class BookModel implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<ChapterModel> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<ChapterModel> chapters) {
+        this.chapters = chapters;
     }
 }

@@ -3,6 +3,8 @@ package com.ldg.common.util;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonUtils {
+
+    private static Gson sGson = new Gson();
 
     public static String toStr(Map<String, Object> map) {
         if (map != null && !map.isEmpty()) {
@@ -45,5 +49,14 @@ public class JsonUtils {
         }
 
         return "";
+    }
+
+    public static <T> T toObj(String json, Class<T> aClass) {
+        try {
+            return sGson.fromJson(json, aClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -11,8 +11,11 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseActi
         doBeforeInit();
         setContentView(getLayoutView());
         initWidgets();
+        createPresenter();
         setListener();
         doAfterInit();
     }
+
+    protected void createPresenter() {}
 
 }

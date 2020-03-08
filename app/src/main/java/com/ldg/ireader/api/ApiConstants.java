@@ -9,7 +9,16 @@ public class ApiConstants {
 
     public static final int REQUEST_GET_MY_BOOK_INFO = 20001;
 
+    public static final int REQUEST_GET_BOOK_DETAIL = 20002;
+
+    public static final int REQUEST_GET_CHAPTER = 20003;
+
     /************************************* request Url *************************************/
 
     public static final String URL_GET_MY_BOOK_INFO = HOST + "novel/my";
+
+    public static final String URL_GET_BOOK_DETAIL = HOST + "novel/detail";
+
+    public static final String URL_GET_CHAPTER = HOST + "novel/chapter";
+
 }

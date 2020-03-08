@@ -1,5 +1,6 @@
 package com.ldg.ireader.bookshelf;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,23 +9,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ldg.common.adapter.BaseRVAdapter;
-import com.ldg.common.util.PairUtils;
+import com.ldg.common.util.ToastUtils;
 import com.ldg.common.view.BaseFragment;
 import com.ldg.ireader.R;
-import com.ldg.ireader.api.ApiConstants;
 import com.ldg.ireader.bookshelf.adapter.BookShelfAdapter;
+import com.ldg.ireader.bookshelf.model.BookModel;
+import com.ldg.ireader.bookshelf.model.BookShelfMyBooksModel;
+import com.ldg.ireader.bookshelf.presenter.BookShelfPresenter;
 import com.ldg.ireader.bookshelf.ui.ReadActivity;
-import com.ldg.ireader.http.HttpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class BookShelfFragment extends BaseFragment {
+public class BookShelfFragment extends BaseFragment implements BookShelfPresenter.BookShelfView {
+
+    public static final String TAG = BookShelfFragment.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private BookShelfAdapter mBookShelfAdapter;
-    private List<String> mBooks = new ArrayList<>();
+    private List<BookModel> mBooks = new ArrayList<>();
+    private BookShelfPresenter mPresenter;
 
     public static BookShelfFragment newInstance(Bundle args) {
         BookShelfFragment fragment = new BookShelfFragment();
@@ -40,14 +45,22 @@ public class BookShelfFragment extends BaseFragment {
     @Override
     protected void initWidgets() {
         mRecyclerView = mRoot.findViewById(R.id.recycler_view);
+        initRecyclerView();
+    }
+
+    @Override
+    protected void createPresenter() {
+        mPresenter = new BookShelfPresenter();
+        if (!mPresenter.isViewAttached()) {
+            mPresenter.attach(this);
+        }
+
+        mPresenter.onViewInit();
     }
 
     @Override
     protected void bindData() {
-        for (int i = 0; i < 10; i++) {
-            mBooks.add(i, "测试" + i);
-        }
-        initRecyclerView();
+
     }
 
     private void initRecyclerView() {
@@ -62,5 +75,36 @@ public class BookShelfFragment extends BaseFragment {
         });
 
         mRecyclerView.setAdapter(mBookShelfAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mBooks.isEmpty()) {
+            mPresenter.getMyBooks("1");
+        }
+    }
+
+    @Override
+    public void updateBooks(BookShelfMyBooksModel booksModel) {
+        if (booksModel != null && booksModel.getBooks() != null) {
+            mBooks = booksModel.getBooks();
+            mBookShelfAdapter.setNewData(mBooks);
+        }
+    }
+
+    @Override
+    public void showEmpty(String msg) {
+
+    }
+
+    @Override
+    public void showException(String msg) {
+        ToastUtils.show(getContext(), msg);
+    }
+
+    @Override
+    public Activity getHostActivity() {
+        return getActivity();
     }
 }

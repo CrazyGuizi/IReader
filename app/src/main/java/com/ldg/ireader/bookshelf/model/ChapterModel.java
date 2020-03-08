@@ -14,6 +14,8 @@ public class ChapterModel implements Serializable {
     private String href;
     @SerializedName("content")
     private String content;
+    @SerializedName("novel_id")
+    private String novelId;
 
     public String getId() {
         return id;
@@ -45,6 +47,14 @@ public class ChapterModel implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getNovelId() {
+        return novelId;
+    }
+
+    public void setNovelId(String novelId) {
+        this.novelId = novelId;
     }
 }
 

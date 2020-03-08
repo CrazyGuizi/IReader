@@ -1,5 +1,8 @@
 package com.ldg.ireader.bookshelf.ui;
 
+import android.app.Activity;
+import android.util.Log;
+
 import com.ldg.common.view.activity.BaseActivity;
 import com.ldg.ireader.R;
 import com.ldg.ireader.bookshelf.core.draw.IPageController;
@@ -7,11 +10,19 @@ import com.ldg.ireader.bookshelf.core.draw.ReadPageManager;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
 import com.ldg.ireader.bookshelf.core.widgets.PageView;
 import com.ldg.ireader.bookshelf.model.BookModel;
+import com.ldg.ireader.bookshelf.model.ChapterModel;
+import com.ldg.ireader.bookshelf.presenter.BookContact;
+import com.ldg.ireader.bookshelf.presenter.BookPresenter;
+import com.ldg.ireader.subscribe.BookLoaderObservable;
 
-public class ReadActivity extends BaseActivity {
+public class ReadActivity extends BaseActivity implements BookContact.View {
+
+    public static final String TAG = ReadActivity.class.getSimpleName();
 
     private PageView mPageView;
     private IPageController mPageController;
+    private BookPresenter mBookPresenter;
+    private BookModel mBook;
 
     @Override
     public void doBeforeInit() {
@@ -34,8 +45,49 @@ public class ReadActivity extends BaseActivity {
     }
 
     @Override
+    protected void createPresenter() {
+        mBookPresenter = new BookPresenter();
+        if (!mBookPresenter.isViewAttached()) {
+            mBookPresenter.attach(this);
+        }
+        mBookPresenter.onViewInit();
+    }
+
+    @Override
     public void doAfterInit() {
         mPageController = new ReadPageManager(new BookModel());
         mPageView.setPageController(mPageController);
+
+        mBookPresenter.getBook("1000");
+    }
+
+    @Override
+    public void updateInfo(BookModel bookModel) {
+        mBook = bookModel;
+        Log.d("ldg", "updateInfo: " + bookModel.getName());
+
+        mBookPresenter.getChapter(mBook.getId(), mBook.getChapters().get(0).getId());
+    }
+
+    @Override
+    public void getChapter(ChapterModel chapterModel) {
+        if (chapterModel != null) {
+            BookLoaderObservable.get().notifyUpdateChapter(chapterModel);
+        }
+    }
+
+    @Override
+    public void showEmpty(String msg) {
+
+    }
+
+    @Override
+    public void showException(String msg) {
+
+    }
+
+    @Override
+    public Activity getHostActivity() {
+        return this;
     }
 }
