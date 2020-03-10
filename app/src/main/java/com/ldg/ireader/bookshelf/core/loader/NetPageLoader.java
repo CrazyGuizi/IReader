@@ -5,6 +5,8 @@ import android.util.Log;
 import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.ChapterModel;
 import com.ldg.ireader.bookshelf.model.TxtChapter;
+import com.ldg.ireader.db.DbHelp;
+import com.ldg.ireader.db.entity.DbBookRecord;
 import com.ldg.ireader.subscribe.BookLoaderObservable;
 import com.ldg.ireader.utils.PageHelper;
 
@@ -27,7 +29,11 @@ public class NetPageLoader extends PageLoader implements BookLoaderObservable.Ob
     }
 
     @Override
-    protected boolean hasChapterData(TxtChapter chapter) {
+    protected boolean hasChapterData() {
+        DbBookRecord dbBookRecord = DbHelp.get().queryRecord(mBookModel.getId());
+        if (dbBookRecord != null) {
+            dbBookRecord.getChapterId();
+        }
         return true;
     }
 

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 29
@@ -16,6 +17,8 @@ android {
                 arguments = [ module : 'app' ]
             }
         }
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -27,6 +30,12 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+}
+
+greendao {
+    schemaVersion 1 //数据库版本号
+    daoPackage 'com.ldg.ireader.db.gen' // 设置DaoMaster、DaoSession、Dao 包名
+    targetGenDir 'src/main/java' //设置DaoMaster、DaoSession、Dao目录,请注意，这里路径用/不要用.
 }
 
 dependencies {

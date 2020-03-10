@@ -68,13 +68,6 @@ public class PageDrawHelper {
         }
     }
 
-    public void drawCurPage(Bitmap bitmap, boolean isUpdate) {
-        if (!mPageLoader.isPrepare()) {
-            mPageLoader.initData();
-        }
-        drawPage(isUpdate);
-    }
-
     public boolean drawNextPage(boolean isUpdate) {
         TxtPage page = mPageLoader.getNextPage();
         if (page != null) {

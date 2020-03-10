@@ -18,7 +18,7 @@ public class LocalPageLoader extends PageLoader {
     }
 
     @Override
-    protected boolean hasChapterData(TxtChapter chapter) {
+    protected boolean hasChapterData() {
         return false;
     }
 

@@ -7,6 +7,8 @@ import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.TxtChapter;
 import com.ldg.ireader.bookshelf.model.TxtPage;
+import com.ldg.ireader.db.DbHelp;
+import com.ldg.ireader.db.entity.DbBookRecord;
 import com.ldg.ireader.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -17,8 +19,7 @@ import java.util.List;
 
 public abstract class PageLoader {
 
-    private final ArrayList<TxtChapter> mChapterList;
-    private BookModel mBookModel;
+    protected BookModel mBookModel;
     private boolean isChapterOpen;
     private boolean isFirstOpen = true;
 
@@ -39,7 +40,6 @@ public abstract class PageLoader {
 
     public PageLoader(BookModel bookModel) {
         mBookModel = bookModel;
-        mChapterList = new ArrayList<>(1);
     }
 
     public TxtPage getCurPage() {
@@ -55,6 +55,10 @@ public abstract class PageLoader {
     }
 
     public void initData() {
+        if (hasChapterData()) {
+
+        }
+
         if (isFirstOpen) {
             openChapter();
         }
@@ -329,7 +333,7 @@ public abstract class PageLoader {
      *
      * @return
      */
-    protected abstract boolean hasChapterData(TxtChapter chapter);
+    protected abstract boolean hasChapterData();
 
     /**
      * 获取章节的文本流

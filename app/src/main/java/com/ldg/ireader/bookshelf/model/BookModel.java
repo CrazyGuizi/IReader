@@ -2,8 +2,11 @@ package com.ldg.ireader.bookshelf.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.greenrobot.greendao.annotation.Generated;
+
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class BookModel implements Serializable {
     private static final long serialVersionUID = -935820639380721547L;
