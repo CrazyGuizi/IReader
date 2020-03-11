@@ -108,6 +108,13 @@ public class ReadPageManager implements IPageController {
     }
 
     @Override
+    public void setLoaderListener(PageLoader.PageLoaderListener loaderListener) {
+        if (mPageLoader != null) {
+            mPageLoader.setPageLoaderListener(loaderListener);
+        }
+    }
+
+    @Override
     public void onDraw(Canvas canvas) {
         if (mPageAnimation != null) {
             mPageAnimation.draw(canvas);

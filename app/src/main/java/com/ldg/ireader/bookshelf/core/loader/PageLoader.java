@@ -20,22 +20,28 @@ import java.util.List;
 public abstract class PageLoader {
 
     protected BookModel mBookModel;
-    private boolean isChapterOpen;
-    private boolean isFirstOpen = true;
 
     protected TxtPage mCurPage;
-    protected TxtPage mCancelPage;
     protected List<TxtPage> mCurPageList;
     protected List<TxtPage> mPrePageList;
     protected List<TxtPage> mNextPageList;
+    // 目录
+    protected List<TxtChapter> mCatalogue = new ArrayList<>();
     // 当前章
     protected int mCurChapterPos = 0;
     protected int mLastChapterPos;
     private OnLoadingListener mOnLoadingListener;
+    private PageLoaderListener mPageLoaderListener;
     private LoadingStatus mStatus;
+    private boolean isFirstOpen = true;
+    protected DbBookRecord mDbBookRecord;
 
     public void setOnLoadingListener(OnLoadingListener onLoadingListener) {
         mOnLoadingListener = onLoadingListener;
+    }
+
+    public void setPageLoaderListener(PageLoaderListener pageLoaderListener) {
+        mPageLoaderListener = pageLoaderListener;
     }
 
     public PageLoader(BookModel bookModel) {
@@ -46,164 +52,54 @@ public abstract class PageLoader {
         return mCurPage;
     }
 
-    public List<TxtPage> getCurPageList() {
-        return mCurPageList;
-    }
-
-    public boolean isPrepare() {
-        return !isFirstOpen;
-    }
-
     public void initData() {
-        if (hasChapterData()) {
-
+        if (mPageLoaderListener != null) {
+            mPageLoaderListener.requestCatalogue(mBookModel.getId());
         }
-
         if (isFirstOpen) {
-            openChapter();
+            mDbBookRecord = DbHelp.get().queryRecord(mBookModel.getId());
+            isFirstOpen = false;
         }
-    }
-
-    public void initDataForced() {
-        isFirstOpen = true;
-        initData();
-    }
-
-    private void openChapter() {
-        isFirstOpen = false;
-        if (parseChapter()) {
-            // 如果章节从未打开
-            if (!isChapterOpen) {
-                // todo 记录书本当前阅读的位置
-                int position = 0;
-
-                // 防止记录页的页号，大于当前最大页号
-                if (position >= mCurPageList.size()) {
-                    position = mCurPageList.size() - 1;
-                }
-                mCurPage = getCurPage(position);
-                mCancelPage = mCurPage;
-                // 切换状态
-                isChapterOpen = true;
-            } else {
-                mCurPage = getCurPage(0);
-            }
+        if (hasChapterData()) {
+            parseChapter();
         } else {
-            mCurPage = new TxtPage();
+            if (mBookModel.isLocal() && mOnLoadingListener != null) {
+                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_PARSE_ERROR);
+            } else if (mPageLoaderListener != null) {
+                mPageLoaderListener.requestChapter(new DbBookRecord(mBookModel.getId()));
+            }
         }
+    }
 
+    private void parseChapter() {
         if (mOnLoadingListener != null) {
-            mOnLoadingListener.updateStatus(mStatus);
-        }
-    }
-
-
-    public TxtPage getCurPage(int pos) {
-        return mCurPageList.get(pos);
-    }
-
-    public TxtPage getNextPage() {
-        if (mCurPage.position + 1 >= mCurPageList.size()) {
-            if (mNextPageList != null && !mNextPageList.isEmpty()) {
-                mPrePageList = mCurPageList;
-                mCurPageList = mNextPageList;
-                preLoadNextChapter();
-                return mCurPage = mCurPageList.get(0);
-            }
-            return null;
-        }
-        mCurPage = mCurPageList.get(mCurPage.position + 1);
-        return mCurPage;
-    }
-
-    public TxtPage getPrePage() {
-        if (mCurPage.position - 1 < 0) {
-            if (mPrePageList != null && !mPrePageList.isEmpty()) {
-                mNextPageList = mCurPageList;
-                mCurPageList = mPrePageList;
-                // todo 解析前一章
-                mPrePageList = null;
-                return mCurPage = mCurPageList.get(mCurPageList.size() - 1);
-            }
-            return null;
-        }
-        mCurPage = mCurPageList.get(mCurPage.position - 1);
-        return mCurPage;
-    }
-
-    private boolean parseChapter() {
-        // 解析数据
-        dealLoadPageList(mCurChapterPos);
-        // 预加载下一页面
-        preLoadNextChapter();
-        return mCurPageList != null ? true : false;
-    }
-
-    private void preLoadNextChapter() {
-        int nextChapter = mCurChapterPos + 1;
-
-        mLastChapterPos = mCurChapterPos;
-        mCurChapterPos = nextChapter;
-        mNextPageList = new ArrayList<>(mCurPageList);
-    }
-
-    private void dealLoadPageList(int chapterPos) {
-        mStatus = null;
-        try {
-            mCurPageList = loadPageList(chapterPos);
-            if (mCurPageList != null) {
-                if (mCurPageList.isEmpty()) {
-                    mStatus = LoadingStatus.STATUS_EMPTY;
-
-                    // 添加一个空数据
-                    TxtPage page = new TxtPage();
-                    page.lines = new ArrayList<>(1);
-                    mCurPageList.add(page);
-                } else {
-                    mStatus = LoadingStatus.STATUS_FINISH;
+            BufferedReader chapterReader = getChapterReader(mDbBookRecord);
+            if (chapterReader != null) {
+                mCurPageList = loadPages(mDbBookRecord.getChapterName(), chapterReader);
+                if (mCurPageList == null || mCurPageList.isEmpty()) {
+                    mOnLoadingListener.updateStatus(LoadingStatus.STATUS_EMPTY);
+                    return;
                 }
+                int position = mDbBookRecord.getPagePosition() < mCurPageList.size() ?
+                        mDbBookRecord.getPagePosition() : mCurPageList.size() - 1;
+                mCurPage = mCurPageList.get(position);
+                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_FINISH);
             } else {
-                mStatus = LoadingStatus.STATUS_LOADING;
+                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_EMPTY);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            mCurPageList = null;
-            mStatus = LoadingStatus.STATUS_ERROR;
         }
-    }
 
-    /**
-     * 加载页面列表
-     *
-     * @param chapterPos:章节序号
-     * @return
-     */
-    private List<TxtPage> loadPageList(int chapterPos) throws Exception {
-        // 获取章节
-//        TxtChapter chapter = mChapterList.get(chapterPos);
-        TxtChapter chapter = new TxtChapter();
-        chapter.setTitle("假装是个标题");
-        // 判断章节是否存在
-        if (!hasChapterData(chapter)) {
-            return null;
-        }
-        // 获取章节的文本流
-        BufferedReader reader = getChapterReader(chapter);
-        List<TxtPage> chapters = loadPages(chapter, reader);
 
-        return chapters;
     }
 
 
     /**
      * 将章节数据，解析成页面列表
      *
-     * @param chapter：章节信息
      * @param br：章节的文本流
      * @return
      */
-    private List<TxtPage> loadPages(TxtChapter chapter, BufferedReader br) {
+    private List<TxtPage> loadPages(String title, BufferedReader br) {
         TextPaint titlePaint = new TextPaint();
         titlePaint.setTextSize(PageConfig.get().getTitleSize());
 
@@ -218,7 +114,7 @@ public abstract class PageLoader {
         int rHeight = PageConfig.get().getVisibleHeight();
         int titleLinesCount = 0;
         boolean showTitle = true; // 是否展示标题
-        String paragraph = chapter.getTitle();//默认展示标题
+        String paragraph = title;//默认展示标题
         try {
             while (showTitle || (paragraph = br.readLine()) != null) {
                 paragraph = StringUtils.convertCC(paragraph, App.get());
@@ -246,7 +142,7 @@ public abstract class PageLoader {
                         // 创建Page
                         TxtPage page = new TxtPage();
                         page.position = pages.size();
-                        page.title = StringUtils.convertCC(chapter.getTitle(), App.get());
+                        page.title = StringUtils.convertCC(title, App.get());
                         page.lines = new ArrayList<>(lines);
                         page.titleLines = titleLinesCount;
                         pages.add(page);
@@ -299,7 +195,7 @@ public abstract class PageLoader {
                 //创建Page
                 TxtPage page = new TxtPage();
                 page.position = pages.size();
-                page.title = StringUtils.convertCC(chapter.getTitle(), App.get());
+                page.title = StringUtils.convertCC(title, App.get());
                 page.lines = new ArrayList<>(lines);
                 page.titleLines = titleLinesCount;
                 pages.add(page);
@@ -323,10 +219,38 @@ public abstract class PageLoader {
     }
 
 
-    /**
-     * 刷新章节列表
-     */
-    public abstract void refreshChapterList();
+    public TxtPage getCurPage(int pos) {
+        return mCurPageList.get(pos);
+    }
+
+    public TxtPage getNextPage() {
+        if (mCurPage.position + 1 >= mCurPageList.size()) {
+            if (mNextPageList != null && !mNextPageList.isEmpty()) {
+                mPrePageList = mCurPageList;
+                mCurPageList = mNextPageList;
+                return mCurPage = mCurPageList.get(0);
+            }
+            return null;
+        }
+        mCurPage = mCurPageList.get(mCurPage.position + 1);
+        return mCurPage;
+    }
+
+    public TxtPage getPrePage() {
+        if (mCurPage.position - 1 < 0) {
+            if (mPrePageList != null && !mPrePageList.isEmpty()) {
+                mNextPageList = mCurPageList;
+                mCurPageList = mPrePageList;
+                // todo 解析前一章
+                mPrePageList = null;
+                return mCurPage = mCurPageList.get(mCurPageList.size() - 1);
+            }
+            return null;
+        }
+        mCurPage = mCurPageList.get(mCurPage.position - 1);
+        return mCurPage;
+    }
+
 
     /**
      * 章节数据是否存在
@@ -338,8 +262,14 @@ public abstract class PageLoader {
     /**
      * 获取章节的文本流
      *
-     * @param chapter
      * @return
      */
-    protected abstract BufferedReader getChapterReader(TxtChapter chapter) throws Exception;
+    protected abstract BufferedReader getChapterReader(DbBookRecord bookRecord);
+
+
+    public interface PageLoaderListener {
+        void requestChapter(DbBookRecord... bookRecords);
+
+        void requestCatalogue(String bookId);
+    }
 }

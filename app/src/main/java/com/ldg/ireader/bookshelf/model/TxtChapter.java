@@ -1,16 +1,33 @@
 package com.ldg.ireader.bookshelf.model;
 
-import java.io.Serializable;
+public class TxtChapter {
 
-public class TxtChapter implements Serializable {
-    private static final long serialVersionUID = 397545697458318195L;
+    private String id;
+    private String title;
+    private String bookId;
 
+    public TxtChapter(String id, String title, String bookId) {
+        this.id = id;
+        this.title = title;
+        this.bookId = bookId;
+    }
 
-    String bookId;
+    public TxtChapter(ChapterModel chapterModel) {
+        if (chapterModel == null) {
+            return;
+        }
+        id = chapterModel.getId();
+        title = chapterModel.getName();
+        bookId = chapterModel.getNovelId();
+    }
 
-    String chapterId;
-    //章节名(共用)
-    String title;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -20,11 +37,12 @@ public class TxtChapter implements Serializable {
         this.title = title;
     }
 
-    public String getChapterId() {
-        return chapterId;
+    public String getBookId() {
+        return bookId;
     }
 
-    public void setChapterId(String chapterId) {
-        this.chapterId = chapterId;
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
     }
+
 }

@@ -7,6 +7,8 @@ import com.ldg.common.util.JsonUtils;
 import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.ChapterModel;
 
+import java.util.List;
+
 public class BookPresenter extends MvpBasePresenter<BookContact.View> {
 
     private BookRepository mRepository;
@@ -42,6 +44,20 @@ public class BookPresenter extends MvpBasePresenter<BookContact.View> {
 
                 getView().getChapter((ChapterModel) res);
             }
+
+            @Override
+            public void onCatalogue(boolean isSuccess, List<ChapterModel> catalogues) {
+                if (!isViewAttached()) {
+                    return;
+                }
+
+                if (!isSuccess || catalogues == null) {
+                    getView().showException("");
+                    return;
+                }
+
+                getView().getCatalogue(catalogues);
+            }
         });
     }
 
@@ -54,6 +70,12 @@ public class BookPresenter extends MvpBasePresenter<BookContact.View> {
     public void getChapter(String bookId, String chapterId) {
         if (mRepository != null) {
             mRepository.getChapter(bookId, chapterId);
+        }
+    }
+
+    public void getCatalogue(String bookId) {
+        if (mRepository != null) {
+            mRepository.getCatalogue(bookId);
         }
     }
 }

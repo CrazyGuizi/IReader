@@ -9,25 +9,25 @@ public class DbBookRecord {
 
     @Id(autoincrement = true)
     private long _id;
-
     private String id;
-
-    private int chapterId;
-
+    private String chapterId;
+    private String chapterName;
     private int pagePosition;
+    private boolean isLocal;
 
-    public DbBookRecord(String id, int chapterId, int pagePosition) {
+    public DbBookRecord(String id) {
         this.id = id;
-        this.chapterId = chapterId;
-        this.pagePosition = pagePosition;
     }
 
-    @Generated(hash = 1047067131)
-    public DbBookRecord(long _id, String id, int chapterId, int pagePosition) {
+    @Generated(hash = 924838294)
+    public DbBookRecord(long _id, String id, String chapterId, String chapterName,
+            int pagePosition, boolean isLocal) {
         this._id = _id;
         this.id = id;
         this.chapterId = chapterId;
+        this.chapterName = chapterName;
         this.pagePosition = pagePosition;
+        this.isLocal = isLocal;
     }
 
     @Generated(hash = 1711340376)
@@ -35,7 +35,7 @@ public class DbBookRecord {
     }
 
     public long get_id() {
-        return this._id;
+        return _id;
     }
 
     public void set_id(long _id) {
@@ -43,26 +43,50 @@ public class DbBookRecord {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public int getChapterId() {
-        return this.chapterId;
+    public String getChapterId() {
+        return chapterId;
     }
 
-    public void setChapterId(int chapterId) {
+    public void setChapterId(String chapterId) {
         this.chapterId = chapterId;
     }
 
     public int getPagePosition() {
-        return this.pagePosition;
+        return pagePosition;
     }
 
     public void setPagePosition(int pagePosition) {
         this.pagePosition = pagePosition;
+    }
+
+    public boolean isLocal() {
+        return isLocal;
+    }
+
+    public void setLocal(boolean local) {
+        isLocal = local;
+    }
+
+    public String getChapterName() {
+        return chapterName;
+    }
+
+    public void setChapterName(String chapterName) {
+        this.chapterName = chapterName;
+    }
+
+    public boolean getIsLocal() {
+        return this.isLocal;
+    }
+
+    public void setIsLocal(boolean isLocal) {
+        this.isLocal = isLocal;
     }
 }

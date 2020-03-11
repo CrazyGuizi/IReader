@@ -13,7 +13,12 @@ import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.ChapterModel;
 import com.ldg.ireader.bookshelf.presenter.BookContact;
 import com.ldg.ireader.bookshelf.presenter.BookPresenter;
+import com.ldg.ireader.db.entity.DbBookRecord;
 import com.ldg.ireader.subscribe.BookLoaderObservable;
+
+import java.util.List;
+
+import io.reactivex.rxjava3.core.Single;
 
 public class ReadActivity extends BaseActivity implements BookContact.View {
 
@@ -58,6 +63,24 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
         mPageController = new ReadPageManager(new BookModel());
         mPageView.setPageController(mPageController);
 
+        mPageController.setLoaderListener(new PageLoader.PageLoaderListener() {
+            @Override
+            public void requestChapter(DbBookRecord... bookRecords) {
+                if (mBookPresenter != null && bookRecords != null) {
+                    for (DbBookRecord bookRecord : bookRecords) {
+                        mBookPresenter.getChapter(bookRecord.getId(), bookRecord.getChapterId());
+                    }
+                }
+            }
+
+            @Override
+            public void requestCatalogue(String bookId) {
+                if (mBookPresenter != null) {
+                    mBookPresenter.getCatalogue(bookId);
+                }
+            }
+        });
+
         mBookPresenter.getBook("1000");
     }
 
@@ -65,14 +88,19 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     public void updateInfo(BookModel bookModel) {
         mBook = bookModel;
         Log.d("ldg", "updateInfo: " + bookModel.getName());
-
-        mBookPresenter.getChapter(mBook.getId(), mBook.getChapters().get(0).getId());
     }
 
     @Override
     public void getChapter(ChapterModel chapterModel) {
         if (chapterModel != null) {
             BookLoaderObservable.get().notifyUpdateChapter(chapterModel);
+        }
+    }
+
+    @Override
+    public void getCatalogue(List<ChapterModel> catalogue) {
+        if (catalogue != null && !catalogue.isEmpty()) {
+            BookLoaderObservable.get().notifyCatalogue(catalogue);
         }
     }
 

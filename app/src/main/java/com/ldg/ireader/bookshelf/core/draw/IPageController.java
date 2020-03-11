@@ -14,6 +14,8 @@ public interface IPageController {
 
     void prepareDisplay(int pageWidth, int pageHeight);
 
+    void setLoaderListener(PageLoader.PageLoaderListener loaderListener);
+
     /**
      * PageView onDraw回调
      *
