@@ -12,6 +12,7 @@ import com.ldg.ireader.bookshelf.model.ChapterModel;
 import com.ldg.ireader.bookshelf.model.TxtPage;
 import com.ldg.ireader.db.DbHelp;
 import com.ldg.ireader.db.entity.DbBookRecord;
+import com.ldg.ireader.subscribe.BookLoaderObservable;
 import com.ldg.ireader.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -169,6 +170,8 @@ public abstract class PageLoader {
         if (curChapter != null) {
             requestChapter(mBookModel.getId(), curChapter.getId());
             updateStatus(LoadingStatus.STATUS_LOADING);
+        } else {
+            updateStatus(LoadingStatus.STATUS_ERROR);
         }
     }
 
@@ -457,6 +460,8 @@ public abstract class PageLoader {
         }
         return pages;
     }
+
+    public abstract void release();
 
     /**
      * 章节数据是否存在

@@ -99,9 +99,7 @@ public class ReadPageManager implements IPageController {
 
             @Override
             public void onDetachedFromWindow() {
-                if (mPageLoader != null) {
-                    mPageLoader.saveDbCurProgress();
-                }
+                release();
             }
         });
 
@@ -151,9 +149,24 @@ public class ReadPageManager implements IPageController {
             mPageLoader.initData();
         }
 
-        if (mReadPage ==  null) {
+        if (mReadPage == null) {
             throw new IllegalArgumentException("invoke attachView before");
         }
         mReadPage.requestLayout();
+    }
+
+    @Override
+    public void release() {
+        if (mPageLoader != null) {
+            mPageLoader.saveDbCurProgress();
+            mPageLoader.release();
+        }
+    }
+
+    @Override
+    public void saveReadProgress() {
+        if (mPageLoader != null) {
+            mPageLoader.saveDbCurProgress();
+        }
     }
 }

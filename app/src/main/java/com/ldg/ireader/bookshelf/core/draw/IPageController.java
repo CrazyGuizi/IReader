@@ -15,4 +15,8 @@ public interface IPageController {
     void prepareDisplay();
 
     void setLoaderListener(PageLoader.PageLoaderListener loaderListener);
+
+    void release();
+
+    void saveReadProgress();
 }

@@ -26,6 +26,13 @@ public class NetPageLoader extends PageLoader implements BookLoaderObservable.Ob
     }
 
     @Override
+    public void release() {
+        if (BookLoaderObservable.get().isRegister(this)) {
+            BookLoaderObservable.get().unregist(this);
+        }
+    }
+
+    @Override
     protected boolean hasChapterData() {
         return hasChapterData(mDbBookRecord.getId(), mCurChapterId, mDbBookRecord.getChapterName());
     }

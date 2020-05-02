@@ -12,6 +12,11 @@ public class LocalPageLoader extends PageLoader {
     }
 
     @Override
+    public void release() {
+
+    }
+
+    @Override
     protected boolean hasChapterData() {
         return false;
     }

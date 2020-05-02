@@ -1,8 +1,13 @@
 package com.ldg.ireader.bookshelf.ui;
 
 import android.app.Activity;
+import android.app.Application;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ldg.common.view.activity.BaseActivity;
 import com.ldg.ireader.R;
@@ -88,6 +93,12 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPageController.saveReadProgress();
     }
 
     @Override
