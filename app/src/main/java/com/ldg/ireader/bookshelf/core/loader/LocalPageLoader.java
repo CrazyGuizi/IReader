@@ -17,6 +17,11 @@ public class LocalPageLoader extends PageLoader {
     }
 
     @Override
+    protected boolean hasChapterData(String bookId, String chapterId, String chapterName) {
+        return false;
+    }
+
+    @Override
     protected BufferedReader getChapterReader(DbBookRecord bookRecord){
         return null;
     }

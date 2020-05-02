@@ -15,15 +15,9 @@ public abstract class HorizonPageAnim extends PageAnimation {
     protected int mMoveX, mMoveY;
     private boolean mHasPrev, mHasNext, mIsToNext;
 
-
-    public HorizonPageAnim(int w, int h, BasePageView view, OnPageChangeListener listener) {
-        this(w, h, 0, 0, view, listener);
+    public HorizonPageAnim(BasePageView pageView, OnPageChangeListener listener) {
+        super(pageView, listener);
     }
-
-    public HorizonPageAnim(int w, int h, int marginWidth, int marginHeight, BasePageView view, OnPageChangeListener listener) {
-        super(w, h, marginWidth, marginHeight, view, listener);
-    }
-
 
     @Override
     public void draw(Canvas canvas) {
@@ -38,7 +32,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
     }
 
     @Override
-    public void onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
 
@@ -60,12 +54,12 @@ public abstract class HorizonPageAnim extends PageAnimation {
                         if (mIsToNext = (x - mLastX < 0)) {
                             mHasNext = mListener.hasNext();
                             if (!mHasNext) {
-                                return;
+                                return false;
                             }
                         } else {
                             mHasPrev = mListener.hasPrev();
                             if (!mHasPrev) {
-                                return;
+                                return false;
                             }
                         }
                     } else {
@@ -100,6 +94,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
         mLastX = x;
         mLastY = y;
 
+        return true;
     }
 
     public abstract void drawMove(Canvas canvas);

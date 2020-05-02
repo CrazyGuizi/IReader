@@ -13,16 +13,11 @@ public class CoverAnimation extends HorizonPageAnim {
 
     private GradientDrawable mShapeDrawable;
 
-    public CoverAnimation(int w, int h, BasePageView view, OnPageChangeListener listener) {
-        super(w, h, view, listener);
-    }
-
-    public CoverAnimation(int w, int h, int marginWidth, int marginHeight, BasePageView view, OnPageChangeListener listener) {
-        super(w, h, marginWidth, marginHeight, view, listener);
+    public CoverAnimation(BasePageView pageView, OnPageChangeListener listener) {
+        super(pageView, listener);
         mShapeDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{0x66000000, 0x00000000});
     }
-
 
     @Override
     public void drawMove(Canvas canvas) {

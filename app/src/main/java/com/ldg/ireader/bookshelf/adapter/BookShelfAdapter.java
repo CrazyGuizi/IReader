@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.ldg.common.adapter.BaseRVAdapter;
 import com.ldg.common.adapter.BaseViewHolder;
+import com.ldg.common.image.NetImage;
 import com.ldg.ireader.R;
 import com.ldg.ireader.bookshelf.model.BookModel;
 
@@ -18,7 +19,9 @@ public class BookShelfAdapter extends BaseRVAdapter<BookModel, BaseViewHolder> {
 
     @Override
     public void convert(BaseViewHolder holder, BookModel bookModel) {
+        NetImage netImage = holder.getView(R.id.iv_cover);
+        netImage.setImage(bookModel.getCoverUrl());
         holder.setText(R.id.tv_book_name, bookModel.getName());
-        holder.addClickListener(R.id.tv_book_name);
+        holder.addClickListener(R.id.root);
     }
 }

@@ -1,5 +1,7 @@
 package com.ldg.ireader.db.entity;
 
+import androidx.annotation.NonNull;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
@@ -7,8 +9,13 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DbBookRecord {
 
+    // 前一个章节的标志
+    public static final int POSITION_PRE = -1;
+    // 后一个章节的标志
+    public static final int POSITION_NEXT = -2;
+
     @Id(autoincrement = true)
-    private long _id;
+    private Long _id;
     private String id;
     private String chapterId;
     private String chapterName;
@@ -19,9 +26,23 @@ public class DbBookRecord {
         this.id = id;
     }
 
-    @Generated(hash = 924838294)
-    public DbBookRecord(long _id, String id, String chapterId, String chapterName,
-            int pagePosition, boolean isLocal) {
+    public DbBookRecord(String id, String chapterId, String chapterName) {
+        this.id = id;
+        this.chapterId = chapterId;
+        this.chapterName = chapterName;
+    }
+
+    public DbBookRecord(String id, String chapterId, String chapterName, int pagePosition, boolean isLocal) {
+        this.id = id;
+        this.chapterId = chapterId;
+        this.chapterName = chapterName;
+        this.pagePosition = pagePosition;
+        this.isLocal = isLocal;
+    }
+
+    @Generated(hash = 944959424)
+    public DbBookRecord(Long _id, String id, String chapterId, String chapterName, int pagePosition,
+            boolean isLocal) {
         this._id = _id;
         this.id = id;
         this.chapterId = chapterId;
@@ -34,11 +55,11 @@ public class DbBookRecord {
     public DbBookRecord() {
     }
 
-    public long get_id() {
+    public Long get_id() {
         return _id;
     }
 
-    public void set_id(long _id) {
+    public void set_id(Long _id) {
         this._id = _id;
     }
 

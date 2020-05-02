@@ -1,11 +1,14 @@
 package com.ldg.ireader.bookshelf.core.loader;
 
 import android.text.TextPaint;
+import android.text.TextUtils;
 
+import com.ldg.common.util.ThreadUtils;
+import com.ldg.common.util.ToastUtils;
 import com.ldg.ireader.App;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.model.BookModel;
-import com.ldg.ireader.bookshelf.model.TxtChapter;
+import com.ldg.ireader.bookshelf.model.ChapterModel;
 import com.ldg.ireader.bookshelf.model.TxtPage;
 import com.ldg.ireader.db.DbHelp;
 import com.ldg.ireader.db.entity.DbBookRecord;
@@ -15,26 +18,41 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public abstract class PageLoader {
 
+    // 提前几页加载
+    private static final int PRE_LOAD_INDEX = 5;
     protected BookModel mBookModel;
 
     protected TxtPage mCurPage;
     protected List<TxtPage> mCurPageList;
-    protected List<TxtPage> mPrePageList;
-    protected List<TxtPage> mNextPageList;
+
     // 目录
-    protected List<TxtChapter> mCatalogue = new ArrayList<>();
+    protected List<ChapterModel> mCatalogue = new ArrayList<>();
+    protected BookCache<String, ChapterModel> mChapterCache = new BookCache();
     // 当前章
-    protected int mCurChapterPos = 0;
-    protected int mLastChapterPos;
+    protected String mCurChapterId;
+
     private OnLoadingListener mOnLoadingListener;
     private PageLoaderListener mPageLoaderListener;
-    private LoadingStatus mStatus;
-    private boolean isFirstOpen = true;
+
+    protected LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     protected DbBookRecord mDbBookRecord;
+
+    protected void putCache(ChapterModel chapterModel) {
+        if (mChapterCache == null) {
+            mChapterCache = new BookCache<>();
+        }
+
+        if (chapterModel == null) {
+            throw new IllegalArgumentException("the chapterModel is null");
+        }
+
+        mChapterCache.put(chapterModel.getId(), chapterModel);
+    }
 
     public void setOnLoadingListener(OnLoadingListener onLoadingListener) {
         mOnLoadingListener = onLoadingListener;
@@ -48,50 +66,272 @@ public abstract class PageLoader {
         mBookModel = bookModel;
     }
 
+    public void initData() {
+        requestCatalogue(mBookModel.getId());
+
+        mDbBookRecord = DbHelp.get().queryRecord(mBookModel.getId());
+        if (mDbBookRecord != null) {
+            mCurChapterId = mDbBookRecord.getChapterId();
+            if (!hasChapterData()) {
+                if (mBookModel.isLocal()) {
+                    // todo 本地加载数据
+                } else if (mPageLoaderListener != null) {
+                    requestChapter(mBookModel.getId(), mCurChapterId);
+                    updateStatus(LoadingStatus.STATUS_LOADING);
+                }
+            }
+        }
+    }
+
+    /**
+     * 通知更新状态
+     *
+     * @param status
+     */
+    protected void notifyStatus(LoadingStatus status) {
+        updateStatus(status);
+        if (mOnLoadingListener != null) {
+            mOnLoadingListener.updateStatus(status);
+        }
+    }
+
+    private void updateStatus(LoadingStatus status) {
+        mStatus = status;
+    }
+
+    public LoadingStatus getStatus() {
+        return mStatus;
+    }
+
+    protected void requestCatalogue(String bookId) {
+        if (mPageLoaderListener != null) {
+            mPageLoaderListener.requestCatalogue(bookId);
+        }
+    }
+
+    protected void requestChapter(String bookId, String novelId) {
+        if (mPageLoaderListener != null) {
+            mPageLoaderListener.requestChapter(bookId, novelId);
+        }
+    }
+
+
+    /**
+     * 获取当前页
+     *
+     * @return
+     */
     public TxtPage getCurPage() {
+        if (mCurPage == null) {
+            if (mDbBookRecord != null) {
+                // 查看是否缓存有数据
+                if (hasChapterData()) {
+                    List<TxtPage> txtPages = parseChapter(mDbBookRecord);
+                    if (txtPages != null) {
+                        mCurPageList = txtPages;
+                        int position;
+                        if (mDbBookRecord.getPagePosition() == DbBookRecord.POSITION_PRE) {
+                            position = mCurPageList.size() - 1;
+                        } else if (mDbBookRecord.getPagePosition() == DbBookRecord.POSITION_NEXT) {
+                            position = 0;
+                        } else {
+                            position = mDbBookRecord.getPagePosition() < mCurPageList.size() ?
+                                    Math.max(mDbBookRecord.getPagePosition(), 0) : mCurPageList.size() - 1;
+                        }
+                        mCurPage = mCurPageList.get(position);
+                        changeProgress(position);
+                        updateStatus(LoadingStatus.STATUS_FINISH);
+                    }
+                } else {
+                    if (mBookModel.isLocal()) {
+                        // todo
+                    } else {
+                        requestCurChapter();
+
+                        // 顺带缓存该章节的前后两章节
+                        preRequestNext();
+                        preRequestPre();
+                    }
+                }
+            } else {
+                requestCurChapter();
+            }
+        }
+
         return mCurPage;
     }
 
-    public void initData() {
-        if (mPageLoaderListener != null) {
-            mPageLoaderListener.requestCatalogue(mBookModel.getId());
-        }
-        if (isFirstOpen) {
-            mDbBookRecord = DbHelp.get().queryRecord(mBookModel.getId());
-            isFirstOpen = false;
-        }
-        if (hasChapterData()) {
-            parseChapter();
-        } else {
-            if (mBookModel.isLocal() && mOnLoadingListener != null) {
-                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_PARSE_ERROR);
-            } else if (mPageLoaderListener != null) {
-                mPageLoaderListener.requestChapter(new DbBookRecord(mBookModel.getId()));
-            }
+    /**
+     * 查看是否有该章节,有则请求网络
+     */
+    private void requestCurChapter() {
+        ChapterModel curChapter = getCurChapter();
+        if (curChapter != null) {
+            requestChapter(mBookModel.getId(), curChapter.getId());
+            updateStatus(LoadingStatus.STATUS_LOADING);
         }
     }
 
-    private void parseChapter() {
-        if (mOnLoadingListener != null) {
-            BufferedReader chapterReader = getChapterReader(mDbBookRecord);
-            if (chapterReader != null) {
-                mCurPageList = loadPages(mDbBookRecord.getChapterName(), chapterReader);
-                if (mCurPageList == null || mCurPageList.isEmpty()) {
-                    mOnLoadingListener.updateStatus(LoadingStatus.STATUS_EMPTY);
-                    return;
+    /**
+     * 请求上一章
+     */
+    private void preRequestPre() {
+
+        ChapterModel preChapter = getPreChapter();
+        if (preChapter != null
+                && (!hasChapterData(preChapter.getNovelId(), preChapter.getId(), preChapter.getName()))) {
+            requestChapter(mBookModel.getId(), preChapter.getId());
+        }
+    }
+
+    /**
+     * 请求下一章
+     */
+    private void preRequestNext() {
+        ChapterModel nexChapter = getNexChapter();
+        if (nexChapter != null
+                && (!hasChapterData(nexChapter.getNovelId(), nexChapter.getId(), nexChapter.getName()))) {
+            requestChapter(mBookModel.getId(), nexChapter.getId());
+        }
+    }
+
+    protected void changeProgress(int pagePosition) {
+        changeProgress(mCurChapterId, "", pagePosition);
+    }
+
+    protected void changeProgress(String chapterId, String chapterName, int pagePosition) {
+        mDbBookRecord.setChapterId(chapterId);
+        mDbBookRecord.setPagePosition(pagePosition);
+        if (!TextUtils.isEmpty(chapterName)) {
+            mDbBookRecord.setChapterName(chapterName);
+        }
+    }
+
+    public void saveDbCurProgress() {
+        if (mDbBookRecord != null) {
+            ThreadUtils.execute(() -> {
+                DbHelp.get().insertBookRecord(mDbBookRecord);
+            });
+        }
+    }
+
+    protected ChapterModel getCurChapter() {
+        if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
+            for (ChapterModel chapterModel : mCatalogue) {
+                if (TextUtils.equals(mCurChapterId, chapterModel.getId())) {
+                    return chapterModel;
                 }
-                int position = mDbBookRecord.getPagePosition() < mCurPageList.size() ?
-                        mDbBookRecord.getPagePosition() : mCurPageList.size() - 1;
-                mCurPage = mCurPageList.get(position);
-                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_FINISH);
-            } else {
-                mOnLoadingListener.updateStatus(LoadingStatus.STATUS_EMPTY);
             }
         }
 
-
+        return null;
     }
 
+    protected ChapterModel getPreChapter() {
+        if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
+            for (int i = 0; i < mCatalogue.size(); i++) {
+                if (TextUtils.equals(mCurChapterId, mCatalogue.get(i).getId())) {
+                    return i - 1 >= 0 && i < mCatalogue.size() ? mCatalogue.get(i - 1) : null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected ChapterModel getNexChapter() {
+        if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
+            for (int i = 0; i < mCatalogue.size(); i++) {
+                if (TextUtils.equals(mCurChapterId, mCatalogue.get(i).getId())) {
+                    return i + 1 >= 0 && i < mCatalogue.size() ? mCatalogue.get(i + 1) : null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    protected List<TxtPage> parseChapter(DbBookRecord dbBookRecord) {
+        List<TxtPage> txtPages = null;
+        BufferedReader chapterReader = getChapterReader(dbBookRecord);
+        if (chapterReader != null) {
+            txtPages = loadPages(dbBookRecord.getChapterName(), chapterReader);
+            if (txtPages == null || txtPages.isEmpty()) {
+                updateStatus(LoadingStatus.STATUS_EMPTY);
+            }
+        } else {
+            updateStatus(LoadingStatus.STATUS_EMPTY);
+        }
+
+        return txtPages;
+    }
+
+    public TxtPage getNextPage() {
+        if (mCurPage == null || mCurPageList == null ||
+                mCurPage.position + 1 >= mCurPageList.size()) {
+            // 正在请求下一章数据
+            if (mStatus == LoadingStatus.STATUS_LOADING
+                    && mDbBookRecord.getPagePosition() == DbBookRecord.POSITION_NEXT) {
+                getCurPage();
+                return null;
+            }
+
+            // 当前章节没数据了
+            ChapterModel nexChapter = getNexChapter();
+            if (nexChapter != null) {
+                mCurChapterId = nexChapter.getId();
+                changeProgress(nexChapter.getId(), nexChapter.getName(), DbBookRecord.POSITION_NEXT);
+                mCurPage = null;
+                getCurPage();
+            } else {
+                updateStatus(LoadingStatus.STATUS_END);
+                ToastUtils.show(App.get(), "没有下一页了");
+            }
+        } else {
+            int nextIndex = mCurPage.position + 1;
+            mCurPage = mCurPageList.get(nextIndex);
+            changeProgress(nextIndex);
+
+            if (nextIndex >= mCurPageList.size() - PRE_LOAD_INDEX) {
+                preRequestNext();
+            }
+        }
+
+        return mCurPage;
+    }
+
+    public TxtPage getPrePage() {
+        if (mCurPage == null || mCurPageList == null ||
+                mCurPage.position - 1 < 0) {
+            // 正在请求上一章数据
+            if (mStatus == LoadingStatus.STATUS_LOADING
+                    && mDbBookRecord.getPagePosition() == DbBookRecord.POSITION_PRE) {
+                getCurPage();
+                return null;
+            }
+
+            ChapterModel preChapter = getPreChapter();
+            if (preChapter != null) {
+                mCurChapterId = preChapter.getId();
+                changeProgress(preChapter.getId(), preChapter.getName(), DbBookRecord.POSITION_PRE);
+                mCurPage = null;
+                getCurPage();
+            } else {
+                ToastUtils.show(App.get(), "没有上一页了");
+            }
+        } else {
+            int preIndex = mCurPage.position - 1;
+            mCurPage = mCurPageList.get(preIndex);
+            changeProgress(preIndex);
+
+            if (preIndex <= PRE_LOAD_INDEX) {
+                preRequestPre();
+            }
+        }
+
+        return mCurPage;
+    }
 
     /**
      * 将章节数据，解析成页面列表
@@ -218,46 +458,19 @@ public abstract class PageLoader {
         return pages;
     }
 
-
-    public TxtPage getCurPage(int pos) {
-        return mCurPageList.get(pos);
-    }
-
-    public TxtPage getNextPage() {
-        if (mCurPage.position + 1 >= mCurPageList.size()) {
-            if (mNextPageList != null && !mNextPageList.isEmpty()) {
-                mPrePageList = mCurPageList;
-                mCurPageList = mNextPageList;
-                return mCurPage = mCurPageList.get(0);
-            }
-            return null;
-        }
-        mCurPage = mCurPageList.get(mCurPage.position + 1);
-        return mCurPage;
-    }
-
-    public TxtPage getPrePage() {
-        if (mCurPage.position - 1 < 0) {
-            if (mPrePageList != null && !mPrePageList.isEmpty()) {
-                mNextPageList = mCurPageList;
-                mCurPageList = mPrePageList;
-                // todo 解析前一章
-                mPrePageList = null;
-                return mCurPage = mCurPageList.get(mCurPageList.size() - 1);
-            }
-            return null;
-        }
-        mCurPage = mCurPageList.get(mCurPage.position - 1);
-        return mCurPage;
-    }
-
-
     /**
      * 章节数据是否存在
      *
      * @return
      */
     protected abstract boolean hasChapterData();
+
+    /**
+     * 章节数据是否存在
+     *
+     * @return
+     */
+    protected abstract boolean hasChapterData(String bookId, String chapterId, String chapterName);
 
     /**
      * 获取章节的文本流
@@ -268,8 +481,22 @@ public abstract class PageLoader {
 
 
     public interface PageLoaderListener {
-        void requestChapter(DbBookRecord... bookRecords);
+        void requestChapter(String bookId, String chapterId);
 
         void requestCatalogue(String bookId);
+    }
+
+
+    protected class BookCache<K, V> extends LinkedHashMap<K, V> {
+        public static final int CACHE_SIZE = 20;
+
+        public BookCache() {
+            super(16, 0.75F, true);
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Entry<K, V> eldest) {
+            return size() > CACHE_SIZE;
+        }
     }
 }

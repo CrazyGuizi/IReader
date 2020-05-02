@@ -3,6 +3,7 @@ package com.ldg.common.http;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.ldg.common.log.LogUtil;
 import com.ldg.common.util.JsonUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -119,7 +120,9 @@ public class HttpManagerImpl extends HttpManager {
                 }
             }
 
-            requestBuild.get().url(builder.substring(0, builder.length() - 1));
+            String getUrl = builder.substring(0, builder.length() - 1);
+            LogUtil.d(getUrl);
+            requestBuild.get().url(getUrl);
         } else {
             RequestBody body = RequestBody.create(JsonUtils.toStr(params), JSON_TYPE);
             requestBuild.post(body).url(url);

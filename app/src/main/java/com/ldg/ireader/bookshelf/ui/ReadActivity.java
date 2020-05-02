@@ -1,6 +1,7 @@
 package com.ldg.ireader.bookshelf.ui;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ldg.common.view.activity.BaseActivity;
@@ -24,6 +25,8 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
 
     public static final String TAG = ReadActivity.class.getSimpleName();
 
+    public static final String KEY_BOOK_MODEL = "key_book_model";
+
     private PageView mPageView;
     private IPageController mPageController;
     private BookPresenter mBookPresenter;
@@ -31,7 +34,11 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
 
     @Override
     public void doBeforeInit() {
-
+        mBook = (BookModel) getIntent().getSerializableExtra(KEY_BOOK_MODEL);
+        if (mBook == null) {
+            finish();
+            return;
+        }
     }
 
     @Override
@@ -60,15 +67,16 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
 
     @Override
     public void doAfterInit() {
-        mPageController = new ReadPageManager(new BookModel());
-        mPageView.setPageController(mPageController);
+        mPageController = new ReadPageManager(mBook);
+        mPageController.attachView(mPageView);
 
         mPageController.setLoaderListener(new PageLoader.PageLoaderListener() {
             @Override
-            public void requestChapter(DbBookRecord... bookRecords) {
-                if (mBookPresenter != null && bookRecords != null) {
-                    for (DbBookRecord bookRecord : bookRecords) {
-                        mBookPresenter.getChapter(bookRecord.getId(), bookRecord.getChapterId());
+            public void requestChapter(String bookId, String chapterId) {
+                if (mBookPresenter != null) {
+                    if (!TextUtils.isEmpty(bookId) &&
+                            !TextUtils.isEmpty(chapterId)) {
+                        mBookPresenter.getChapter(bookId, chapterId);
                     }
                 }
             }
@@ -80,8 +88,6 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
                 }
             }
         });
-
-        mBookPresenter.getBook("1000");
     }
 
     @Override

@@ -23,5 +23,5 @@ public class ApiConstants {
 
     public static final String URL_GET_CHAPTER = HOST + "novel/chapter";
 
-    public static final String URL_GET_CATALOGUE = "novel/catalogue";
+    public static final String URL_GET_CATALOGUE = HOST + "novel/catalogue";
 }

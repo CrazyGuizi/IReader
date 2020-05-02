@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ldg.common.adapter.BaseRVAdapter;
@@ -64,13 +64,20 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
     }
 
     private void initRecyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
+
         mBookShelfAdapter = new BookShelfAdapter(mBooks);
 
         mBookShelfAdapter.setOnItemChildClick(new BaseRVAdapter.onItemChildClick() {
             @Override
             public void onViewClick(BaseRVAdapter adapter, View view, int position) {
-                startActivity(new Intent(getActivity(), ReadActivity.class));
+                if (position < 0 || position >= mBooks.size()) {
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), ReadActivity.class);
+                intent.putExtra(ReadActivity.KEY_BOOK_MODEL, mBooks.get(position));
+                startActivity(intent);
             }
         });
 

@@ -49,8 +49,9 @@ public class ReadPageManager implements IPageController {
         mPageLoader.setOnLoadingListener(new OnLoadingListener() {
             @Override
             public void updateStatus(LoadingStatus status) {
-                mPageDrawHelper.setStatus(status);
-                mPageDrawHelper.drawPage(true);
+                if (mPageDrawHelper != null) {
+                    mPageDrawHelper.drawPage(true);
+                }
             }
         });
     }
@@ -69,7 +70,41 @@ public class ReadPageManager implements IPageController {
         if (pageView == null) {
             return;
         }
+        if (mReadPage != null) {
+            mReadPage.setCallback(null);
+        }
+
         mReadPage = pageView;
+        mReadPage.setCallback(new BasePageView.Callback() {
+            @Override
+            public void onSizeChanged(int w, int h, int oldw, int oldh) {
+                prepareDisplay();
+            }
+
+            @Override
+            public void onDraw(Canvas canvas) {
+                if (mPageAnimation != null) {
+                    mPageAnimation.draw(canvas);
+                }
+            }
+
+            @Override
+            public boolean onTouchEvent(MotionEvent event) {
+                if (mPageAnimation != null) {
+                    return mPageAnimation.onTouchEvent(event);
+                }
+
+                return false;
+            }
+
+            @Override
+            public void onDetachedFromWindow() {
+                if (mPageLoader != null) {
+                    mPageLoader.saveDbCurProgress();
+                }
+            }
+        });
+
         mPageDrawHelper = new PageDrawHelper(mReadPage, mPageLoader);
     }
 
@@ -78,8 +113,7 @@ public class ReadPageManager implements IPageController {
         if (width != 0 && height != 0) {
             switch (PageConfig.get().getPageMode()) {
                 case COVER:
-                    animation = new CoverAnimation(width, height,
-                            mReadPage, mPageAnimListener);
+                    animation = new CoverAnimation(mReadPage, mPageAnimListener);
                     break;
                 case SLIDE:
                     break;
@@ -89,7 +123,7 @@ public class ReadPageManager implements IPageController {
                     break;
 
                 default:
-                    animation = new NonePageAnim(width, height, mReadPage, mPageAnimListener);
+                    animation = new NonePageAnim(mReadPage, mPageAnimListener);
                     break;
             }
         }
@@ -97,13 +131,16 @@ public class ReadPageManager implements IPageController {
     }
 
     @Override
-    public void prepareDisplay(int pageWidth, int pageHeight) {
-        if (pageHeight == 0 || pageHeight == 0) {
-            return;
+    public void prepareDisplay() {
+        if (mReadPage == null) {
+            throw new IllegalArgumentException("you must call attachView() first");
         }
-        PageConfig.get().setDisplayWidth(pageWidth).setDisplayHeight(pageHeight);
-        mPageAnimation = getAnimation(pageWidth, pageHeight);
-        mPageLoader.initData();
+
+        int width = mReadPage.getMeasuredWidth() - mReadPage.getPaddingLeft() - mReadPage.getPaddingRight();
+        int height = mReadPage.getMeasuredHeight() - mReadPage.getPaddingTop() - mReadPage.getPaddingBottom();
+
+        PageConfig.get().setDisplayWidth(width).setDisplayHeight(height);
+        mPageAnimation = getAnimation(width, height);
         mPageDrawHelper.drawPage(true);
     }
 
@@ -111,25 +148,12 @@ public class ReadPageManager implements IPageController {
     public void setLoaderListener(PageLoader.PageLoaderListener loaderListener) {
         if (mPageLoader != null) {
             mPageLoader.setPageLoaderListener(loaderListener);
+            mPageLoader.initData();
         }
-    }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        if (mPageAnimation != null) {
-            mPageAnimation.draw(canvas);
+        if (mReadPage ==  null) {
+            throw new IllegalArgumentException("invoke attachView before");
         }
-    }
-
-    @Override
-    public void onTouchEvent(MotionEvent event) {
-        if (mPageAnimation != null) {
-            mPageAnimation.onTouchEvent(event);
-        }
-    }
-
-    @Override
-    public void onClickPageCenter(MotionEvent event) {
-
+        mReadPage.requestLayout();
     }
 }

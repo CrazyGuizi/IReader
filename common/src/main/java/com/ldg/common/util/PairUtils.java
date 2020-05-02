@@ -16,11 +16,16 @@ public class PairUtils {
 
     public final PairUtils add(String key, String val) {
         if (!TextUtils.isEmpty(key)) {
+            if (TextUtils.isEmpty(val)) {
+                val = "\"\"";
+            }
             mPairList.add(new Pair<>(key, val));
         }
         return this;
 
-    } public final PairUtils add(String key, int val) {
+    }
+
+    public final PairUtils add(String key, int val) {
         if (!TextUtils.isEmpty(key)) {
             mPairList.add(new Pair<>(key, String.valueOf(val)));
         }

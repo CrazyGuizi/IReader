@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/gray"
-    android:layout_marginBottom="@dimen/dip8">
+    android:layout_marginLeft="@dimen/dip10"
+    android:layout_marginTop="@dimen/dip10"
+    android:layout_marginRight="@dimen/dip10"
+    android:paddingBottom="@dimen/dip30">
+
+    <com.ldg.common.image.NetImage
+        android:id="@+id/iv_cover"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip200"
+        android:scaleType="centerCrop"
+        tools:src="@color/gray" />
+
 
     <TextView
         android:id="@+id/tv_book_name"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dip32"
-        android:textSize="@dimen/dip16"
-        android:gravity="center"
-        tools:text="测试" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_cover"
+        android:layout_marginTop="@dimen/dip8"
+        android:ellipsize="end"
+        android:gravity="left"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dip14"
+        android:textStyle="bold"
+        tools:text="测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试" />
 
-</LinearLayout>
+</RelativeLayout>

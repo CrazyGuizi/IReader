@@ -2,7 +2,9 @@ package com.ldg.ireader.bookshelf.core.widgets;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -13,8 +15,13 @@ public abstract class BasePageView extends View {
 
     protected int mWidth, mHeight;
     protected Bitmap mCurBitmap, mNextBitmap;
+    protected Callback mCallback;
 
-    protected IPageController mPageController;
+
+
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
 
     public BasePageView(Context context) {
         this(context, null);
@@ -53,12 +60,6 @@ public abstract class BasePageView extends View {
         mNextBitmap = change;
     }
 
-    public void setPageController(IPageController pageController) {
-        mPageController = pageController;
-        mPageController.attachView(this);
-        requestLayout();
-    }
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (mWidth == w && mHeight == h) {
@@ -78,5 +79,23 @@ public abstract class BasePageView extends View {
         } else {
             mNextBitmap = Bitmap.createScaledBitmap(mNextBitmap, mWidth, mHeight, false);
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mCallback != null) {
+            mCallback.onDetachedFromWindow();
+        }
+    }
+
+    public interface Callback {
+        void onSizeChanged(int w, int h, int oldw, int oldh);
+
+        void onDraw(Canvas canvas);
+
+        boolean onTouchEvent(MotionEvent event);
+
+        void onDetachedFromWindow();
     }
 }

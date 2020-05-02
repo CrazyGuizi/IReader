@@ -28,7 +28,7 @@ public class BookRepository implements ResponseListener {
 
     public void getCatalogue(String bookId) {
         HttpUtils.get(ApiConstants.REQUEST_GET_CATALOGUE,
-                PairUtils.init().add("book_id", bookId).build(), this);
+                PairUtils.init().add("novel_id", bookId).build(), this);
     }
 
     @Override

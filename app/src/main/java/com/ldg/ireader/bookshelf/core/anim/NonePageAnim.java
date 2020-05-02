@@ -7,12 +7,8 @@ import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public class NonePageAnim extends HorizonPageAnim {
 
-    public NonePageAnim(int w, int h, BasePageView view, OnPageChangeListener listener) {
-        super(w, h, view, listener);
-    }
-
-    public NonePageAnim(int w, int h, int marginWidth, int marginHeight, BasePageView view, OnPageChangeListener listener) {
-        super(w, h, marginWidth, marginHeight, view, listener);
+    public NonePageAnim(BasePageView pageView, OnPageChangeListener listener) {
+        super(pageView, listener);
     }
 
     @Override

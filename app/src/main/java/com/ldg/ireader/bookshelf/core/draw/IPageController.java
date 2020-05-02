@@ -12,18 +12,7 @@ public interface IPageController {
 
     void attachView(BasePageView pageView);
 
-    void prepareDisplay(int pageWidth, int pageHeight);
+    void prepareDisplay();
 
     void setLoaderListener(PageLoader.PageLoaderListener loaderListener);
-
-    /**
-     * PageView onDraw回调
-     *
-     * @param canvas
-     */
-    void onDraw(Canvas canvas);
-
-    void onTouchEvent(MotionEvent event);
-
-    void onClickPageCenter(MotionEvent event);
 }

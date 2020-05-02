@@ -74,6 +74,7 @@
     <dimen name="dip130">130dp</dimen>
     <dimen name="dip164">164dp</dimen>
     <dimen name="dip200">200dp</dimen>
+    <dimen name="dip250">250dp</dimen>
 
     <!--sp value-->
     <dimen name="sp13">13sp</dimen>

@@ -68,38 +68,40 @@ public class PageDrawHelper {
         }
     }
 
-    public boolean drawNextPage(boolean isUpdate) {
+    public boolean drawNextPage(boolean updateContent) {
         TxtPage page = mPageLoader.getNextPage();
         if (page != null) {
-            drawPage(isUpdate);
+            drawPage(updateContent);
         }
 
         return page != null;
     }
 
-    public boolean drawPrePage(boolean isUpdate) {
+    public boolean drawPrePage(boolean updateContent) {
         TxtPage prePage = mPageLoader.getPrePage();
         if (prePage != null) {
-            drawPage(isUpdate);
+            drawPage(updateContent);
         }
 
         return prePage != null;
     }
 
-    public void drawPage(boolean isUpdate) {
+    public void drawPage(boolean updateContent) {
         Bitmap bitmap = mReadPage.getNextBitmap();
-        drawBackground(bitmap, isUpdate);
+        drawBackground(bitmap, updateContent);
 
-        if (isUpdate) {
-            drawContent(bitmap, mPageLoader.getCurPage());
+        if (updateContent) {
+            TxtPage curPage = mPageLoader.getCurPage();
+            mStatus = mPageLoader.getStatus();
+            drawContent(bitmap, curPage);
         }
         mReadPage.invalidate();
     }
 
-    private void drawBackground(Bitmap bgBitmap, boolean isUpdate) {
+    private void drawBackground(Bitmap bgBitmap, boolean updateContent) {
         Canvas canvas = new Canvas(bgBitmap);
 
-        if (isUpdate) {
+        if (updateContent) {
             canvas.drawColor(PageConfig.get().getBgColor());
         } else {
             mBgPaint.setColor(PageConfig.get().getBgColor());
@@ -122,6 +124,9 @@ public class PageDrawHelper {
                     break;
                 case STATUS_EMPTY:
                     tip = "文章内容为空";
+                    break;
+                case STATUS_END:
+                    tip = "全书完";
                     break;
                 case STATUS_PARING:
                     tip = "正在排版请等待...";

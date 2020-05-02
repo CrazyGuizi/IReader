@@ -11,12 +11,12 @@ import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public abstract class PageAnimation {
 
-    //屏幕的尺寸
-    protected int mScreenWidth;
-    protected int mScreenHeight;
-    //屏幕的间距
-    protected int mMarginWidth;
-    protected int mMarginHeight;
+//    //屏幕的尺寸
+//    protected int mScreenWidth;
+//    protected int mScreenHeight;
+//    //屏幕的间距
+//    protected int mMarginWidth;
+//    protected int mMarginHeight;
     //视图的尺寸
     protected int mViewWidth;
     protected int mViewHeight;
@@ -30,19 +30,22 @@ public abstract class PageAnimation {
     //监听器
     protected OnPageChangeListener mListener;
 
-    public PageAnimation(int w, int h, BasePageView pageView, OnPageChangeListener listener){
-        this(w, h, 0, 0, pageView,listener);
-    }
+    public PageAnimation(BasePageView pageView, OnPageChangeListener listener){
+//        mScreenWidth = w;
+//        mScreenHeight = h;
+//
+//        mMarginWidth = marginWidth;
+//        mMarginHeight = marginHeight;
 
-    public PageAnimation(int w, int h, int marginWidth, int marginHeight, BasePageView pageView, OnPageChangeListener listener) {
-        mScreenWidth = w;
-        mScreenHeight = h;
+//        mViewWidth = mScreenWidth - mMarginWidth * 2;
+//        mViewHeight = mScreenHeight - mMarginHeight * 2;
 
-        mMarginWidth = marginWidth;
-        mMarginHeight = marginHeight;
+        if (pageView == null) {
+            return;
+        }
 
-        mViewWidth = mScreenWidth - mMarginWidth * 2;
-        mViewHeight = mScreenHeight - mMarginHeight * 2;
+        mViewWidth = pageView.getMeasuredWidth();
+        mViewHeight = pageView.getMeasuredHeight();
 
         mPageView = pageView;
         mListener = listener;
@@ -54,7 +57,7 @@ public abstract class PageAnimation {
 
     public abstract void draw(Canvas canvas);
 
-    public abstract void onTouchEvent(MotionEvent event);
+    public abstract boolean onTouchEvent(MotionEvent event);
 
     public interface OnPageChangeListener {
         boolean hasPrev();

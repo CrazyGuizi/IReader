@@ -1,29 +1,20 @@
 package com.ldg.ireader.bookshelf.core.loader;
 
-import android.os.Build;
-import android.util.Log;
+import android.text.TextUtils;
 
+import com.ldg.common.log.LogUtil;
 import com.ldg.common.util.FileUtils;
 import com.ldg.ireader.App;
 import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.ChapterModel;
-import com.ldg.ireader.bookshelf.model.TxtChapter;
-import com.ldg.ireader.db.DbHelp;
 import com.ldg.ireader.db.entity.DbBookRecord;
 import com.ldg.ireader.subscribe.BookLoaderObservable;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.IntFunction;
-
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.functions.Function;
 
 public class NetPageLoader extends PageLoader implements BookLoaderObservable.Observer {
 
@@ -36,58 +27,62 @@ public class NetPageLoader extends PageLoader implements BookLoaderObservable.Ob
 
     @Override
     protected boolean hasChapterData() {
-        if (mDbBookRecord != null) {
-            mCurChapterPos = mDbBookRecord.getPagePosition();
-            return FileUtils.isExit(FileUtils.getBookCachePath(App.get(), mDbBookRecord.getId(), mDbBookRecord.getChapterName()));
-        } else {
-            mCurChapterPos = 0;
+        return hasChapterData(mDbBookRecord.getId(), mCurChapterId, mDbBookRecord.getChapterName());
+    }
+
+    @Override
+    protected boolean hasChapterData(String bookId, String chapterId, String chapterName) {
+        boolean hasData = mChapterCache != null && mChapterCache.get(chapterId) != null;
+        if (!hasData) {
+            hasData = FileUtils.isExit(FileUtils.getBookCachePath(App.get(), bookId, chapterName));
         }
-        return false;
+
+        return hasData;
     }
 
     @Override
     protected BufferedReader getChapterReader(DbBookRecord bookRecord) {
-        try {
-            return new BufferedReader(new FileReader(FileUtils.getBookCachePath(App.get(), bookRecord.getId(), bookRecord.getChapterName())));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        BufferedReader bufferedReader = null;
+        if (mChapterCache != null && mChapterCache.get(bookRecord.getChapterId()) != null) {
+            bufferedReader = new BufferedReader(new StringReader(mChapterCache.get(bookRecord.getChapterId()).getContent()));
+        } else if (bufferedReader == null) {
+            try {
+                String bookCachePath = FileUtils.getBookCachePath(App.get(), bookRecord.getId(), bookRecord.getChapterName());
+                LogUtil.d("读取位置:" + bookCachePath);
+                bufferedReader = new BufferedReader(new FileReader(bookCachePath));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
-        return null;
+        return bufferedReader;
     }
 
     @Override
     public void onGetChapter(ChapterModel chapterModel) {
-        FileUtils.saveFile(App.get(), chapterModel.getId(),
+        putCache(chapterModel);
+        FileUtils.saveFile(App.get(), chapterModel.getNovelId(),
                 chapterModel.getName(), chapterModel.getContent());
 
+        if (mDbBookRecord == null) {
+            mDbBookRecord = new DbBookRecord(chapterModel.getNovelId(), chapterModel.getId(), chapterModel.getName());
+        }
+
+        if (mStatus == LoadingStatus.STATUS_LOADING
+                && TextUtils.equals(mCurChapterId, chapterModel.getId())) {
+            notifyStatus(LoadingStatus.STATUS_FINISH);
+        }
     }
 
     @Override
     public void notifyCatalogue(List<ChapterModel> catalogue) {
         if (catalogue != null && !catalogue.isEmpty()) {
             synchronized (mCatalogue) {
-                Observable.fromIterable(catalogue)
-                        .map(new Function<ChapterModel, TxtChapter>() {
-                            @Override
-                            public TxtChapter apply(ChapterModel chapterModel) throws Throwable {
-                                return new TxtChapter(chapterModel);
-                            }
-                        })
-                        .doAfterNext(new Consumer<TxtChapter>() {
-                            @Override
-                            public void accept(TxtChapter txtChapter) throws Throwable {
-                                if (mDbBookRecord.getChapterId().equals(txtChapter.getId())) {
-                                    mDbBookRecord.setPagePosition(mCatalogue.indexOf(txtChapter));
-                                }
-                            }
-                        })
-                        .subscribe(new Consumer<TxtChapter>() {
-                            @Override
-                            public void accept(TxtChapter txtChapter) throws Throwable {
-                                mCatalogue.add(txtChapter);
-                            }
-                        });
+                mCatalogue = catalogue;
+                if (TextUtils.isEmpty(mCurChapterId)) {
+                    mCurChapterId = mCatalogue.get(0).getId();
+                    notifyStatus(LoadingStatus.STATUS_LOADING);
+                }
             }
         }
     }
