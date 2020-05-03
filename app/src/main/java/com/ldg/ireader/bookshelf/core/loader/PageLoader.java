@@ -290,6 +290,7 @@ public abstract class PageLoader {
             } else {
                 updateStatus(LoadingStatus.STATUS_END);
                 ToastUtils.show(App.get(), "没有下一页了");
+                return null;
             }
         } else {
             int nextIndex = mCurPage.position + 1;
@@ -322,6 +323,7 @@ public abstract class PageLoader {
                 getCurPage();
             } else {
                 ToastUtils.show(App.get(), "没有上一页了");
+                return null;
             }
         } else {
             int preIndex = mCurPage.position - 1;

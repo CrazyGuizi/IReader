@@ -1,8 +1,10 @@
 package com.ldg.ireader.bookshelf.core.draw;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.MotionEvent;
 
+import com.ldg.common.util.ToastUtils;
 import com.ldg.ireader.bookshelf.core.anim.CoverAnimation;
 import com.ldg.ireader.bookshelf.core.anim.NonePageAnim;
 import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
@@ -36,7 +38,19 @@ public class ReadPageManager implements IPageController {
         }
 
         @Override
-        public void pageCancel() {
+        public void pageCancel(boolean cancelNext) {
+            // 取消翻页后把当前页修正
+            if(cancelNext) {
+                mPageLoader.getPrePage();
+            } else {
+                mPageLoader.getNextPage();
+            }
+            mReadPage.changeBitmap();
+        }
+
+        @Override
+        public void onClickCenter() {
+            ToastUtils.show(mReadPage.getContext(), "呼出菜单");
         }
     };
 
@@ -93,7 +107,6 @@ public class ReadPageManager implements IPageController {
                 if (mPageAnimation != null) {
                     return mPageAnimation.onTouchEvent(event);
                 }
-
                 return false;
             }
 

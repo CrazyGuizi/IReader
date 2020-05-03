@@ -2,6 +2,8 @@ package com.ldg.ireader.bookshelf.core.anim;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.animation.LinearInterpolator;
@@ -11,13 +13,6 @@ import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public abstract class PageAnimation {
 
-//    //屏幕的尺寸
-//    protected int mScreenWidth;
-//    protected int mScreenHeight;
-//    //屏幕的间距
-//    protected int mMarginWidth;
-//    protected int mMarginHeight;
-    //视图的尺寸
     protected int mViewWidth;
     protected int mViewHeight;
     protected int mTouchSlop;
@@ -29,26 +24,23 @@ public abstract class PageAnimation {
     protected Scroller mScroller;
     //监听器
     protected OnPageChangeListener mListener;
+    protected RectF mCenterClickArea;
 
-    public PageAnimation(BasePageView pageView, OnPageChangeListener listener){
-//        mScreenWidth = w;
-//        mScreenHeight = h;
-//
-//        mMarginWidth = marginWidth;
-//        mMarginHeight = marginHeight;
 
-//        mViewWidth = mScreenWidth - mMarginWidth * 2;
-//        mViewHeight = mScreenHeight - mMarginHeight * 2;
-
+    public PageAnimation(BasePageView pageView, OnPageChangeListener listener) {
         if (pageView == null) {
-            return;
+            throw new IllegalArgumentException("the PageView must not be null");
         }
 
-        mViewWidth = pageView.getMeasuredWidth();
-        mViewHeight = pageView.getMeasuredHeight();
+        if (listener == null) {
+            throw new IllegalArgumentException("the OnPageChangeListener must not be null");
+        }
 
         mPageView = pageView;
         mListener = listener;
+        mViewWidth = pageView.getMeasuredWidth();
+        mViewHeight = pageView.getMeasuredHeight();
+        mCenterClickArea = new RectF(1F * mViewWidth / 3, 0, 2F * mViewWidth / 3, mViewHeight);
 
         mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
 
@@ -61,7 +53,16 @@ public abstract class PageAnimation {
 
     public interface OnPageChangeListener {
         boolean hasPrev();
+
         boolean hasNext();
-        void pageCancel();
+
+        /**
+         * 取消翻页
+         *
+         * @param cancelNext 取消翻下一页
+         */
+        void pageCancel(boolean cancelNext);
+
+        void onClickCenter();
     }
 }

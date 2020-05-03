@@ -58,7 +58,7 @@ public class PageConfig {
 
 
     private PageConfig() {
-        mPageMode = PageMode.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_MODE, PageMode.NONE.name()));
+        mPageMode = PageMode.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_MODE, PageMode.COVER.name()));
         mPageStyle = PageStyle.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_STYLE, PageStyle.BG_GREEN.name()));
         mMarginWidth = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_WIDTH, DEFAULT_MARGIN_WIDTH);
         mMarginHeight = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_HEIGHT, DEFAULT_MARGIN_HEIGHT);

@@ -71,6 +71,7 @@ public class PageDrawHelper {
     public boolean drawNextPage(boolean updateContent) {
         TxtPage page = mPageLoader.getNextPage();
         if (page != null) {
+            mReadPage.changeBitmap();
             drawPage(updateContent);
         }
 
@@ -80,6 +81,7 @@ public class PageDrawHelper {
     public boolean drawPrePage(boolean updateContent) {
         TxtPage prePage = mPageLoader.getPrePage();
         if (prePage != null) {
+            mReadPage.changeBitmap();
             drawPage(updateContent);
         }
 

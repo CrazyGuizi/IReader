@@ -52,6 +52,6 @@ public class PageView extends BasePageView {
             return mCallback.onTouchEvent(event);
         }
 
-        return super.onTouchEvent(event);
+        return false;
     }
 }
