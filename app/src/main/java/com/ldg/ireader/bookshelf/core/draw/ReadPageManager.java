@@ -8,6 +8,7 @@ import com.ldg.common.util.ToastUtils;
 import com.ldg.ireader.bookshelf.core.anim.CoverAnimation;
 import com.ldg.ireader.bookshelf.core.anim.NonePageAnim;
 import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
+import com.ldg.ireader.bookshelf.core.anim.SlideAnimation;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.loader.LoadingStatus;
 import com.ldg.ireader.bookshelf.core.loader.LocalPageLoader;
@@ -127,6 +128,7 @@ public class ReadPageManager implements IPageController {
                     animation = new CoverAnimation(mReadPage, mPageAnimListener);
                     break;
                 case SLIDE:
+                    animation = new SlideAnimation(mReadPage, mPageAnimListener);
                     break;
                 case SCROLL:
                     break;

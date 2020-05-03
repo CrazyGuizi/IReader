@@ -12,20 +12,25 @@ import com.ldg.ireader.utils.ScreenUtils;
 
 public class CoverAnimation extends HorizonPageAnim {
 
+    private final Rect srcCur;
+    private final Rect dstCur;
+    private final Rect srcNext;
+    private final Rect dstNext;
+
     private GradientDrawable mShapeDrawable;
 
     public CoverAnimation(BasePageView pageView, OnPageChangeListener listener) {
         super(pageView, listener);
         mShapeDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
                 new int[]{0x66000000, 0x00000000});
+        srcCur = new Rect();
+        dstCur = new Rect();
+        srcNext = new Rect();
+        dstNext = new Rect();
     }
 
     @Override
     public void drawMove(Canvas canvas) {
-        Rect srcCur = new Rect();
-        Rect dstCur = new Rect();
-        Rect srcNext = new Rect();
-        Rect dstNext = new Rect();
         if (mIsToNext) {
             srcNext.set(0, 0, mViewWidth, mViewHeight);
             dstNext.set(0, 0, mViewWidth, mViewHeight);
