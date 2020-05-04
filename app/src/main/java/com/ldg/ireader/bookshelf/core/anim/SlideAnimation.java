@@ -7,17 +7,8 @@ import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 
 public class SlideAnimation extends HorizonPageAnim {
 
-    private final Rect srcCur;
-    private final Rect dstCur;
-    private final Rect srcNext;
-    private final Rect dstNext;
-
     public SlideAnimation(BasePageView pageView, OnPageChangeListener listener) {
         super(pageView, listener);
-        srcCur = new Rect();
-        dstCur = new Rect();
-        srcNext = new Rect();
-        dstNext = new Rect();
     }
 
     @Override

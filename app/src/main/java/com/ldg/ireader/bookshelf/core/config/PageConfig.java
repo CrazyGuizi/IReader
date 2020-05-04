@@ -58,10 +58,13 @@ public class PageConfig {
 
 
     private PageConfig() {
-        mPageMode = PageMode.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_MODE, PageMode.SLIDE.name()));
+        mPageMode = PageMode.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_MODE, PageMode.SCROLL.name()));
         mPageStyle = PageStyle.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_STYLE, PageStyle.BG_GREEN.name()));
         mMarginWidth = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_WIDTH, DEFAULT_MARGIN_WIDTH);
-        mMarginHeight = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_HEIGHT, DEFAULT_MARGIN_HEIGHT);
+        if (mPageMode != PageMode.SCROLL) {
+            mMarginHeight = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_HEIGHT, DEFAULT_MARGIN_HEIGHT);
+        }
+
         mTitleSize = SP.getInt(mContext, SPKey.KEY_PAGE_TITLE_SIZE, DEFAULT_TEXT_SIZE);
         mTextSize = SP.getInt(mContext, SPKey.KEY_PAGE_TEXT_SIZE, DEFAULT_TEXT_SIZE);
 

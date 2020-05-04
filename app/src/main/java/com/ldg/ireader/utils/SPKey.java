@@ -15,4 +15,6 @@ public class SPKey {
     public static final String KEY_PAGE_TEXT_INTERVAL = "key_page_text_interval";
 
     public static final String KEY_PAGE_TEXT_COLOR = "key_page_text_color";
+
+    public static final String KEY_SCROLL_Y = "key_scroll_y";
 }

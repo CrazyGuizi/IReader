@@ -26,6 +26,11 @@ public abstract class PageAnimation {
     protected OnPageChangeListener mListener;
     protected RectF mCenterClickArea;
 
+    protected Rect srcCur;
+    protected Rect dstCur;
+    protected Rect srcNext;
+    protected Rect dstNext;
+
 
     public PageAnimation(BasePageView pageView, OnPageChangeListener listener) {
         if (pageView == null) {
@@ -45,11 +50,18 @@ public abstract class PageAnimation {
         mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
 
         mTouchSlop = ViewConfiguration.get(mPageView.getContext()).getScaledTouchSlop();
+
+        srcCur = new Rect();
+        dstCur = new Rect();
+        srcNext = new Rect();
+        dstNext = new Rect();
     }
 
     public abstract void draw(Canvas canvas);
 
     public abstract boolean onTouchEvent(MotionEvent event);
+
+    public void saveScrollProgress() {}
 
     public interface OnPageChangeListener {
         boolean hasPrev();

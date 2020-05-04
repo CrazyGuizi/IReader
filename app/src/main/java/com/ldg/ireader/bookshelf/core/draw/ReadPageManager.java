@@ -8,6 +8,7 @@ import com.ldg.common.util.ToastUtils;
 import com.ldg.ireader.bookshelf.core.anim.CoverAnimation;
 import com.ldg.ireader.bookshelf.core.anim.NonePageAnim;
 import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
+import com.ldg.ireader.bookshelf.core.anim.ScrollAnimation;
 import com.ldg.ireader.bookshelf.core.anim.SlideAnimation;
 import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.loader.LoadingStatus;
@@ -41,7 +42,7 @@ public class ReadPageManager implements IPageController {
         @Override
         public void pageCancel(boolean cancelNext) {
             // 取消翻页后把当前页修正
-            if(cancelNext) {
+            if (cancelNext) {
                 mPageLoader.getPrePage();
             } else {
                 mPageLoader.getNextPage();
@@ -131,6 +132,7 @@ public class ReadPageManager implements IPageController {
                     animation = new SlideAnimation(mReadPage, mPageAnimListener);
                     break;
                 case SCROLL:
+                    animation = new ScrollAnimation(mReadPage, mPageAnimListener);
                     break;
                 case SIMULATION:
                     break;
@@ -176,12 +178,20 @@ public class ReadPageManager implements IPageController {
             mPageLoader.saveDbCurProgress();
             mPageLoader.release();
         }
+
+        if (mPageAnimation != null && mPageAnimation instanceof ScrollAnimation) {
+            mPageAnimation.saveScrollProgress();
+        }
     }
 
     @Override
     public void saveReadProgress() {
         if (mPageLoader != null) {
             mPageLoader.saveDbCurProgress();
+        }
+
+        if (mPageAnimation != null && mPageAnimation instanceof ScrollAnimation) {
+            mPageAnimation.saveScrollProgress();
         }
     }
 }
