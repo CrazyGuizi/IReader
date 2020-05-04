@@ -9,6 +9,6 @@
     <com.ldg.ireader.bookshelf.core.widgets.PageView
         android:id="@+id/page_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

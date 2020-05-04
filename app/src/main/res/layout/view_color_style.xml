@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:background="@color/gray">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/color_white"
+            android:layout_width="@dimen/dip54"
+            android:layout_height="@dimen/dip54"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_color_white" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/color_brown"
+            android:layout_width="@dimen/dip54"
+            android:layout_height="@dimen/dip54"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_color_brown" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/color_canary"
+            android:layout_width="@dimen/dip54"
+            android:layout_height="@dimen/dip54"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_color_canary" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/color_reseda"
+            android:layout_width="@dimen/dip54"
+            android:layout_height="@dimen/dip54"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_color_reseda" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/color_dark"
+            android:layout_width="@dimen/dip54"
+            android:layout_height="@dimen/dip54"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_color_dark" />
+    </FrameLayout>
+
+</LinearLayout>

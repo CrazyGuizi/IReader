@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="@color/gray">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/dip12">
+
+        <FrameLayout
+            android:id="@+id/fl_font_dec"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip24"
+            android:layout_marginRight="@dimen/dip24"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@mipmap/font_size_down" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_font_size"
+            android:layout_width="@dimen/dip42"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="16"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dip24" />
+
+        <FrameLayout
+            android:id="@+id/fl_font_add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip24"
+            android:layout_marginRight="@dimen/dip24"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@mipmap/font_size_up" />
+        </FrameLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_anim_scroll"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip12"
+            android:layout_marginRight="@dimen/dip12"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3"
+            android:gravity="center"
+            android:paddingTop="@dimen/dip8"
+            android:paddingBottom="@dimen/dip8"
+            android:text="滚动"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dip14" />
+
+        <TextView
+            android:id="@+id/tv_anim_cover"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip12"
+            android:layout_marginRight="@dimen/dip12"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3"
+            android:gravity="center"
+            android:paddingTop="@dimen/dip8"
+            android:paddingBottom="@dimen/dip8"
+            android:text="覆盖"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dip14" />
+
+        <TextView
+            android:id="@+id/tv_anim_slide"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip12"
+            android:layout_marginRight="@dimen/dip12"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3"
+            android:gravity="center"
+            android:paddingTop="@dimen/dip8"
+            android:paddingBottom="@dimen/dip8"
+            android:text="滑动"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dip14" />
+
+        <TextView
+            android:id="@+id/tv_anim_none"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dip12"
+            android:layout_marginRight="@dimen/dip12"
+            android:layout_weight="1"
+            android:background="@drawable/bg_color_e9e7e3"
+            android:gravity="center"
+            android:paddingTop="@dimen/dip8"
+            android:paddingBottom="@dimen/dip8"
+            android:text="无"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dip14" />
+    </LinearLayout>
+
+</LinearLayout>

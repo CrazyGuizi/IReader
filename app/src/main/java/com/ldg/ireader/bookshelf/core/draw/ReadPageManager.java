@@ -1,10 +1,10 @@
 package com.ldg.ireader.bookshelf.core.draw;
 
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.ldg.common.util.ToastUtils;
+import com.ldg.ireader.bookshelf.core.PageControllerListener;
 import com.ldg.ireader.bookshelf.core.anim.CoverAnimation;
 import com.ldg.ireader.bookshelf.core.anim.NonePageAnim;
 import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
@@ -26,6 +26,7 @@ public class ReadPageManager implements IPageController {
     private PageAnimation mPageAnimation;
     private PageLoader mPageLoader;
     private PageDrawHelper mPageDrawHelper;
+    private PageControllerListener mControllerListener;
 
     // 动画监听类
     private PageAnimation.OnPageChangeListener mPageAnimListener = new PageAnimation.OnPageChangeListener() {
@@ -37,6 +38,14 @@ public class ReadPageManager implements IPageController {
         @Override
         public boolean hasNext() {
             return mPageDrawHelper.drawNextPage(true);
+        }
+
+        @Override
+        public boolean interceptTouch() {
+            if (mControllerListener != null) {
+                return mControllerListener.interceptTouch();
+            }
+            return false;
         }
 
         @Override
@@ -52,7 +61,9 @@ public class ReadPageManager implements IPageController {
 
         @Override
         public void onClickCenter() {
-            ToastUtils.show(mReadPage.getContext(), "呼出菜单");
+            if (mControllerListener != null) {
+                mControllerListener.onClickPageCenter();
+            }
         }
     };
 
@@ -136,7 +147,7 @@ public class ReadPageManager implements IPageController {
                     break;
                 case SIMULATION:
                     break;
-
+                case NONE:
                 default:
                     animation = new NonePageAnim(mReadPage, mPageAnimListener);
                     break;
@@ -173,6 +184,11 @@ public class ReadPageManager implements IPageController {
     }
 
     @Override
+    public void setControllerListener(PageControllerListener listener) {
+        mControllerListener = listener;
+    }
+
+    @Override
     public void release() {
         if (mPageLoader != null) {
             mPageLoader.saveDbCurProgress();
@@ -193,5 +209,27 @@ public class ReadPageManager implements IPageController {
         if (mPageAnimation != null && mPageAnimation instanceof ScrollAnimation) {
             mPageAnimation.saveScrollProgress();
         }
+    }
+
+    @Override
+    public void updateConfig() {
+        PageConfig.get().init();
+        mPageLoader.reparseCurPage();
+        mPageDrawHelper.initPaint();
+        prepareDisplay();
+//        if (mPageAnimation instanceof ScrollAnimation) {
+//            if (((ScrollAnimation)mPageAnimation).isToNext()) {
+//                // 上半部分是前一页，下半部分是当前页，重画这两页
+//                mPageDrawHelper.drawPrePage(true);
+//                mPageDrawHelper.drawNextPage(true);
+//            } else if (((ScrollAnimation)mPageAnimation).isToPre()) {
+//                // 上半部分是当前页，下半部分是下一页，重画这两页
+//                mPageDrawHelper.drawNextPage(true);
+//                mPageDrawHelper.drawPrePage(true);
+//            }
+//        } else {
+//            mPageDrawHelper.drawPage(true);
+//        }
+
     }
 }

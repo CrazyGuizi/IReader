@@ -27,6 +27,15 @@ public class ScrollAnimation extends PageAnimation {
     private int mMinVelocity;
     private int mDownX, mDownY;
 
+
+    public boolean isToNext() {
+        return mToNext;
+    }
+
+    public boolean isToPre() {
+        return mToPre;
+    }
+
     public ScrollAnimation(BasePageView pageView, OnPageChangeListener listener) {
         super(pageView, listener);
         getSaveScrollY();
@@ -81,6 +90,10 @@ public class ScrollAnimation extends PageAnimation {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mListener.interceptTouch()) {
+            return false;
+        }
+
         int y = (int) event.getY();
         int x = (int) event.getX();
 

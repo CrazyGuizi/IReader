@@ -36,7 +36,7 @@ public class PageDrawHelper {
         initPaint();
     }
 
-    private void initPaint() {
+    public void initPaint() {
         // 绘制标题的画笔
         if (mTitlePaint == null) {
             mTitlePaint = new TextPaint();

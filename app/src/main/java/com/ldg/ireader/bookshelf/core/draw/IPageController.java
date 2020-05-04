@@ -3,6 +3,7 @@ package com.ldg.ireader.bookshelf.core.draw;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
+import com.ldg.ireader.bookshelf.core.PageControllerListener;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
 import com.ldg.ireader.bookshelf.core.widgets.BasePageView;
 import com.ldg.ireader.bookshelf.core.widgets.PageView;
@@ -16,7 +17,11 @@ public interface IPageController {
 
     void setLoaderListener(PageLoader.PageLoaderListener loaderListener);
 
+    void setControllerListener(PageControllerListener listener);
+
     void release();
 
     void saveReadProgress();
+
+    void updateConfig();
 }

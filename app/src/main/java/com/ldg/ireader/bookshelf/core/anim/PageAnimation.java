@@ -68,6 +68,8 @@ public abstract class PageAnimation {
 
         boolean hasNext();
 
+        boolean interceptTouch();
+
         /**
          * 取消翻页
          *

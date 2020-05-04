@@ -11,6 +11,11 @@ import androidx.annotation.Nullable;
 
 import com.ldg.common.view.activity.BaseActivity;
 import com.ldg.ireader.R;
+import com.ldg.ireader.bookshelf.core.PageControllerListener;
+import com.ldg.ireader.bookshelf.core.PageStyle;
+import com.ldg.ireader.bookshelf.core.anim.PageAnimation;
+import com.ldg.ireader.bookshelf.core.anim.PageMode;
+import com.ldg.ireader.bookshelf.core.config.PageConfig;
 import com.ldg.ireader.bookshelf.core.draw.IPageController;
 import com.ldg.ireader.bookshelf.core.draw.ReadPageManager;
 import com.ldg.ireader.bookshelf.core.loader.PageLoader;
@@ -36,6 +41,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     private IPageController mPageController;
     private BookPresenter mBookPresenter;
     private BookModel mBook;
+    private ReadSettingFragment mSettingFragment;
 
     @Override
     public void doBeforeInit() {
@@ -93,12 +99,75 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
                 }
             }
         });
+
+        mPageController.setControllerListener(new PageControllerListener() {
+            @Override
+            public void onClickPageCenter() {
+                showSetting();
+            }
+
+            @Override
+            public boolean interceptTouch() {
+                if (mSettingFragment != null && mSettingFragment.isVisible()) {
+                    mSettingFragment.dismiss();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    private void showSetting() {
+        if (mSettingFragment == null) {
+            mSettingFragment = new ReadSettingFragment();
+        }
+
+        mSettingFragment.setCallback(new ReadSettingFragment.Callback() {
+            @Override
+            public void onClickBack() {
+                finish();
+            }
+
+            @Override
+            public void onClickMenu() {
+
+            }
+
+            @Override
+            public void onChangeColor(PageStyle style) {
+                mPageController.updateConfig();
+            }
+
+            @Override
+            public void onChangeFont(int size) {
+                if (PageConfig.get().getTextSize() != size) {
+                    PageConfig.get().setTextSize(size);
+                    mPageController.updateConfig();
+                }
+            }
+
+            @Override
+            public void onChangeAnimMode(PageMode pageMode) {
+                mPageController.updateConfig();
+            }
+        });
+
+        mSettingFragment.show(getSupportFragmentManager(), "setting");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mPageController.saveReadProgress();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSettingFragment != null && mSettingFragment.isVisible()) {
+            mSettingFragment.dismiss();
+        }
     }
 
     @Override

@@ -397,5 +397,17 @@
     <color name="float_window_bg_border_normal">#bcbcbc</color>
     <color name="float_window_bg_border_edit">#4f95ff</color>
     <color name="color_bg_green">#c9ebc9</color>
+    <color name="color_d9c68c">#d9c68c</color>
+    <color name="color_d7d3cb">#d7d3cb</color>
+    <color name="color_efe5ce">#efe5ce</color>
+    <color name="color_ddd8cb">#ddd8cb</color>
+    <color name="color_c3e4c4">#c3e4c4</color>
+    <color name="color_e5e2de">#e5e2de</color>
+    <color name="color_181715">#181715</color>
+    <color name="color_2c2c2c">#2c2c2c</color>
+    <color name="color_e9e7e3">#e9e7e3</color>
+    <color name="color_FF3D3D">#FF3D3D</color>
+    <color name="color_font_day">#1e1e1e</color>
+    <color name="color_font_night">#787878</color>
 
 </resources>

@@ -27,6 +27,9 @@ public class PageConfig {
 
     public static final int DEFAULT_TEXT_SIZE = ScreenUtils.sp2Px(20);
 
+    public static final int MIN_TEXT_SIZE = ScreenUtils.dp2px(16);
+    public static final int MAX_TEXT_SIZE = ScreenUtils.dp2px(26);
+
     private PageMode mPageMode;
     private PageStyle mPageStyle;
     private Context mContext = App.get();
@@ -58,8 +61,12 @@ public class PageConfig {
 
 
     private PageConfig() {
+        init();
+    }
+
+    public void init() {
         mPageMode = PageMode.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_MODE, PageMode.SCROLL.name()));
-        mPageStyle = PageStyle.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_STYLE, PageStyle.BG_GREEN.name()));
+        mPageStyle = PageStyle.valueOf(SP.getString(mContext, SPKey.KEY_PAGE_STYLE, PageStyle.BG_WHITE.name()));
         mMarginWidth = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_WIDTH, DEFAULT_MARGIN_WIDTH);
         if (mPageMode != PageMode.SCROLL) {
             mMarginHeight = SP.getInt(mContext, SPKey.KEY_PAGE_MARGIN_HEIGHT, DEFAULT_MARGIN_HEIGHT);
@@ -115,7 +122,7 @@ public class PageConfig {
 
     public PageConfig setPageStyle(PageStyle pageStyle) {
         if (pageStyle != null) {
-            SP.setParam(mContext, SPKey.KEY_PAGE_MODE, pageStyle.name());
+            SP.setParam(mContext, SPKey.KEY_PAGE_STYLE, pageStyle.name());
             mPageStyle = pageStyle;
         }
         return this;

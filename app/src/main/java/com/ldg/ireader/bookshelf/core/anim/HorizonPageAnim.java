@@ -40,6 +40,10 @@ public abstract class HorizonPageAnim extends PageAnimation {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mListener.interceptTouch()) {
+            return false;
+        }
+
         int x = (int) event.getX();
         int y = (int) event.getY();
 

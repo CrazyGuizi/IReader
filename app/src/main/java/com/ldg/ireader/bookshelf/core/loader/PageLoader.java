@@ -117,6 +117,11 @@ public abstract class PageLoader {
     }
 
 
+    public void reparseCurPage() {
+        mCurPage = null;
+        getCurPage();
+    }
+
     /**
      * 获取当前页
      *
