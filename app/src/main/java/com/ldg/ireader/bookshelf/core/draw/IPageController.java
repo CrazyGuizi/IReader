@@ -24,4 +24,6 @@ public interface IPageController {
     void saveReadProgress();
 
     void updateConfig();
+
+    void jumpChapter(String chapterId);
 }

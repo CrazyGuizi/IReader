@@ -17,6 +17,9 @@ public class ChapterModel implements Serializable {
     @SerializedName("novel_id")
     private String novelId;
 
+    // 正在阅读的章节
+    private boolean mReading;
+
     public String getId() {
         return id;
     }
@@ -55,6 +58,14 @@ public class ChapterModel implements Serializable {
 
     public void setNovelId(String novelId) {
         this.novelId = novelId;
+    }
+
+    public boolean isReading() {
+        return mReading;
+    }
+
+    public void setReading(boolean reading) {
+        mReading = reading;
     }
 }
 

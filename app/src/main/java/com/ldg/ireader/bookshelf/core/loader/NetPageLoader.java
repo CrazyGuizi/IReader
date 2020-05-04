@@ -90,6 +90,10 @@ public class NetPageLoader extends PageLoader implements BookLoaderObservable.Ob
                     mCurChapterId = mCatalogue.get(0).getId();
                     notifyStatus(LoadingStatus.STATUS_LOADING);
                 }
+
+                if (mPageLoaderListener != null) {
+                    mPageLoaderListener.changeCurChapter(mCurChapterId);
+                }
             }
         }
     }

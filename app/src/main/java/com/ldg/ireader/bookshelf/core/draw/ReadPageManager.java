@@ -1,6 +1,7 @@
 package com.ldg.ireader.bookshelf.core.draw;
 
 import android.graphics.Canvas;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 
 import com.ldg.common.util.ToastUtils;
@@ -217,19 +218,15 @@ public class ReadPageManager implements IPageController {
         mPageLoader.reparseCurPage();
         mPageDrawHelper.initPaint();
         prepareDisplay();
-//        if (mPageAnimation instanceof ScrollAnimation) {
-//            if (((ScrollAnimation)mPageAnimation).isToNext()) {
-//                // 上半部分是前一页，下半部分是当前页，重画这两页
-//                mPageDrawHelper.drawPrePage(true);
-//                mPageDrawHelper.drawNextPage(true);
-//            } else if (((ScrollAnimation)mPageAnimation).isToPre()) {
-//                // 上半部分是当前页，下半部分是下一页，重画这两页
-//                mPageDrawHelper.drawNextPage(true);
-//                mPageDrawHelper.drawPrePage(true);
-//            }
-//        } else {
-//            mPageDrawHelper.drawPage(true);
-//        }
+    }
 
+    @Override
+    public void jumpChapter(String chapterId) {
+        if (!TextUtils.equals(chapterId, mPageLoader.getCurChapterId())) {
+            boolean hasData = mPageLoader.loadChapter(chapterId);
+            if (hasData) {
+                prepareDisplay();
+            }
+        }
     }
 }

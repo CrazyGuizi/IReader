@@ -38,10 +38,14 @@ public abstract class PageLoader {
     protected String mCurChapterId;
 
     private OnLoadingListener mOnLoadingListener;
-    private PageLoaderListener mPageLoaderListener;
+    protected PageLoaderListener mPageLoaderListener;
 
     protected LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     protected DbBookRecord mDbBookRecord;
+
+    public String getCurChapterId() {
+        return mCurChapterId;
+    }
 
     protected void putCache(ChapterModel chapterModel) {
         if (mChapterCache == null) {
@@ -119,7 +123,23 @@ public abstract class PageLoader {
 
     public void reparseCurPage() {
         mCurPage = null;
+        mCurChapterId = mDbBookRecord.getChapterId();
         getCurPage();
+    }
+
+    public boolean loadChapter(String chapterId) {
+        ChapterModel chapter = getChapter(chapterId);
+        if (chapter != null) {
+            if (mDbBookRecord == null) {
+                mDbBookRecord = new DbBookRecord(mBookModel.getId());
+            }
+
+            changeProgress(chapter.getId(), chapter.getName(), DbBookRecord.POSITION_NEXT);
+            reparseCurPage();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -147,6 +167,10 @@ public abstract class PageLoader {
                         mCurPage = mCurPageList.get(position);
                         changeProgress(position);
                         updateStatus(LoadingStatus.STATUS_FINISH);
+
+                        if (mPageLoaderListener != null) {
+                            mPageLoaderListener.changeCurChapter(mDbBookRecord.getChapterId());
+                        }
                     }
                 } else {
                     if (mBookModel.isLocal()) {
@@ -227,6 +251,18 @@ public abstract class PageLoader {
         if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
             for (ChapterModel chapterModel : mCatalogue) {
                 if (TextUtils.equals(mCurChapterId, chapterModel.getId())) {
+                    return chapterModel;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected ChapterModel getChapter(String chapterId) {
+        if (!TextUtils.isEmpty(chapterId) && mCatalogue != null) {
+            for (ChapterModel chapterModel : mCatalogue) {
+                if (TextUtils.equals(chapterId, chapterModel.getId())) {
                     return chapterModel;
                 }
             }
@@ -496,6 +532,8 @@ public abstract class PageLoader {
         void requestChapter(String bookId, String chapterId);
 
         void requestCatalogue(String bookId);
+
+        void changeCurChapter(String chapterId);
     }
 
 

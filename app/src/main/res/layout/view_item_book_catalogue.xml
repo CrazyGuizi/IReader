@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dip24"
+        android:layout_marginRight="@dimen/dip24"
+        android:paddingTop="@dimen/dip16"
+        android:paddingBottom="@dimen/dip16"
+        android:textColor="@color/color_font_day"
+        android:textSize="@dimen/dip14"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="第一章 魁拔" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/diving_E3ECE9" />
+
+</LinearLayout>

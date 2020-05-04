@@ -31,6 +31,10 @@ public abstract class BaseRVAdapter<T, VH extends BaseViewHolder> extends Recycl
         return mOnItemChildClick;
     }
 
+    public List<T> getData() {
+        return mData;
+    }
+
     public BaseRVAdapter(@LayoutRes int resId) {
         this(resId, new ArrayList<T>());
     }
@@ -49,7 +53,7 @@ public abstract class BaseRVAdapter<T, VH extends BaseViewHolder> extends Recycl
 
     public void setNewData(List<T> datas){
         if (datas == null) {
-            return;
+            datas = new ArrayList<>();
         }
 
         mData = datas;
