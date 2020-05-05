@@ -9,10 +9,6 @@ public enum LoadingStatus {
     STATUS_ERROR,
     // 空数据
     STATUS_EMPTY,
-    // 全书完
-    STATUS_END,
-    // 全书开始
-    STATUS_STAR,
     // 正在解析 (装载本地数据)
     STATUS_PARING,
     // 本地文件解析错误(暂未被使用)

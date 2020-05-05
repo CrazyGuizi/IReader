@@ -275,7 +275,7 @@ public abstract class PageLoader {
         if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
             for (int i = 0; i < mCatalogue.size(); i++) {
                 if (TextUtils.equals(mCurChapterId, mCatalogue.get(i).getId())) {
-                    return i - 1 >= 0 && i < mCatalogue.size() ? mCatalogue.get(i - 1) : null;
+                    return i - 1 >= 0 && i - 1 < mCatalogue.size() ? mCatalogue.get(i - 1) : null;
                 }
             }
         }
@@ -287,7 +287,7 @@ public abstract class PageLoader {
         if (!TextUtils.isEmpty(mCurChapterId) && mCatalogue != null) {
             for (int i = 0; i < mCatalogue.size(); i++) {
                 if (TextUtils.equals(mCurChapterId, mCatalogue.get(i).getId())) {
-                    return i + 1 >= 0 && i < mCatalogue.size() ? mCatalogue.get(i + 1) : null;
+                    return i + 1 >= 0 && i + 1 < mCatalogue.size() ? mCatalogue.get(i + 1) : null;
                 }
             }
         }
@@ -329,7 +329,6 @@ public abstract class PageLoader {
                 mCurPage = null;
                 getCurPage();
             } else {
-                updateStatus(LoadingStatus.STATUS_END);
                 ToastUtils.show(App.get(), "没有下一页了");
                 return null;
             }
@@ -341,6 +340,7 @@ public abstract class PageLoader {
             if (nextIndex >= mCurPageList.size() - PRE_LOAD_INDEX) {
                 preRequestNext();
             }
+            updateStatus(LoadingStatus.STATUS_FINISH);
         }
 
         return mCurPage;
@@ -374,6 +374,7 @@ public abstract class PageLoader {
             if (preIndex <= PRE_LOAD_INDEX) {
                 preRequestPre();
             }
+            updateStatus(LoadingStatus.STATUS_FINISH);
         }
 
         return mCurPage;

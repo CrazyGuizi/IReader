@@ -73,6 +73,7 @@ public class NetPageLoader extends PageLoader implements BookLoaderObservable.Ob
 
         if (mDbBookRecord == null) {
             mDbBookRecord = new DbBookRecord(chapterModel.getNovelId(), chapterModel.getId(), chapterModel.getName());
+            saveDbCurProgress();
         }
 
         if (mStatus == LoadingStatus.STATUS_LOADING

@@ -72,8 +72,8 @@ public class PageDrawHelper {
         TxtPage page = mPageLoader.getNextPage();
         if (page != null) {
             mReadPage.changeBitmap();
-            drawPage(updateContent);
         }
+        drawPage(updateContent);
 
         return page != null;
     }
@@ -82,8 +82,8 @@ public class PageDrawHelper {
         TxtPage prePage = mPageLoader.getPrePage();
         if (prePage != null) {
             mReadPage.changeBitmap();
-            drawPage(updateContent);
         }
+        drawPage(updateContent);
 
         return prePage != null;
     }
@@ -126,9 +126,6 @@ public class PageDrawHelper {
                     break;
                 case STATUS_EMPTY:
                     tip = "文章内容为空";
-                    break;
-                case STATUS_END:
-                    tip = "全书完";
                     break;
                 case STATUS_PARING:
                     tip = "正在排版请等待...";
