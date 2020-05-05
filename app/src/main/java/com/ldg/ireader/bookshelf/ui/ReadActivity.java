@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.ChapterModel;
 import com.ldg.ireader.bookshelf.presenter.BookContact;
 import com.ldg.ireader.bookshelf.presenter.BookPresenter;
+import com.ldg.ireader.bookshelf.widgets.SimpleDrawerLayout;
 import com.ldg.ireader.db.entity.DbBookRecord;
 import com.ldg.ireader.subscribe.BookLoaderObservable;
 
@@ -47,6 +49,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     private BookPresenter mBookPresenter;
     private BookModel mBook;
     private ReadSettingFragment mSettingFragment;
+    private SimpleDrawerLayout mDrawerLayout;
     private RecyclerView mCatalogueList;
     private BookCatalogueAdapter mCatalogueAdapter;
 
@@ -68,6 +71,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     public void initWidgets() {
         mPageView = findViewById(R.id.page_view);
         mCatalogueList = findViewById(R.id.rv_catalogue);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
         initRecycler();
     }
@@ -78,7 +82,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
             @Override
             public void onViewClick(BaseRVAdapter adapter, View view, int position) {
                 Log.d(TAG, "onViewClick: " + adapter.getData().get(position));
-                mCatalogueList.setVisibility(View.GONE);
+                mDrawerLayout.close();
                 ChapterModel model = mCatalogueAdapter.getData().get(position);
                 mPageController.jumpChapter(model.getId());
                 changeCurChapter(model.getId());
@@ -107,7 +111,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     public void doAfterInit() {
         mPageController = new ReadPageManager(mBook);
         mPageController.attachView(mPageView);
-
+        mDrawerLayout.setEnableScroll(PageConfig.get().getPageMode() != PageMode.SCROLL);
         mPageController.setLoaderListener(new PageLoader.PageLoaderListener() {
             @Override
             public void requestChapter(String bookId, String chapterId) {
@@ -145,8 +149,8 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
                     return true;
                 }
 
-                if (mCatalogueList.getVisibility() == View.VISIBLE) {
-                    mCatalogueList.setVisibility(View.GONE);
+                if (mDrawerLayout != null && mDrawerLayout.isOpened()) {
+                    mDrawerLayout.close();
                     return true;
                 }
 
@@ -181,8 +185,8 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
 
             @Override
             public void onClickMenu() {
-                if (mCatalogueList.getVisibility() != View.VISIBLE) {
-                    mCatalogueList.setVisibility(View.VISIBLE);
+                if (!mDrawerLayout.isOpened()) {
+                    mDrawerLayout.open();
                     int curPos = mCatalogueAdapter.getCurChapterPosition();
                     if (curPos >= 0) {
                         mCatalogueList.scrollToPosition(curPos);
@@ -205,6 +209,7 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
 
             @Override
             public void onChangeAnimMode(PageMode pageMode) {
+                mDrawerLayout.setEnableScroll(pageMode != PageMode.SCROLL);
                 mPageController.updateConfig();
             }
         });
@@ -260,5 +265,14 @@ public class ReadActivity extends BaseActivity implements BookContact.View {
     @Override
     public Activity getHostActivity() {
         return this;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (KeyEvent.KEYCODE_BACK == keyCode && mDrawerLayout != null && mDrawerLayout.isOpened()) {
+            mDrawerLayout.close();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

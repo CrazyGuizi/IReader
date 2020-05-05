@@ -6,18 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".bookshelf.ui.ReadActivity">
 
-    <com.ldg.ireader.bookshelf.core.widgets.PageView
-        android:id="@+id/page_view"
+    <com.ldg.ireader.bookshelf.widgets.SimpleDrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_catalogue"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="150dp"
-        android:elevation="@dimen/dip12"
-        tools:listitem="@layout/view_item_book_catalogue"
-        android:visibility="gone"/>
+        <com.ldg.ireader.bookshelf.core.widgets.PageView
+            android:id="@+id/page_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_catalogue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="120dp"
+            android:gravity="left"
+            tools:listitem="@layout/view_item_book_catalogue" />
+
+    </com.ldg.ireader.bookshelf.widgets.SimpleDrawerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
