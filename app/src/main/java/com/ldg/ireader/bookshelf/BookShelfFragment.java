@@ -108,6 +108,16 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
     @Override
     public void showException(String msg) {
         ToastUtils.show(getContext(), msg);
+        BookShelfMyBooksModel booksModel = new BookShelfMyBooksModel();
+        List<BookModel> list = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            BookModel bookModel = new BookModel();
+            bookModel.setName("书本" + i);
+            bookModel.setCoverUrl("http://cdn-app-qn-bj.colorv.cn/photos/02640543960c3777/de2be8015d0c4856ab1adb870c96dbc3.jpg");
+            list.add(bookModel);
+        }
+        booksModel.setBooks(list);
+        updateBooks(booksModel);
     }
 
     @Override
