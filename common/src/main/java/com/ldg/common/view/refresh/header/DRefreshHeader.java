@@ -8,21 +8,27 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ldg.common.R;
 import com.ldg.common.view.refresh.IRefreshHeader;
 
 public class DRefreshHeader extends FrameLayout implements IRefreshHeader {
 
 
     public DRefreshHeader(@NonNull Context context) {
-        super(context);
+        this(context, null);
     }
 
     public DRefreshHeader(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public DRefreshHeader(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initView();
+    }
+
+    private void initView() {
+        inflate(getContext(), R.layout.view_refresh_header, this);
     }
 
     @NonNull

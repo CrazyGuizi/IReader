@@ -101,7 +101,7 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(0);
+            View child = getChildAt(i);
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
         }
 
@@ -119,8 +119,9 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
      */
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        LogUtil.d(TAG, "onLayout: " + mCurOffset + "\tmaxOffset:" + mMaxOffset);
         for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(0);
+            View child = getChildAt(i);
             if (child == mHeaderView) {
                 child.layout(l, t + mCurOffset - child.getMeasuredHeight(),
                         r, t + mCurOffset);
@@ -184,6 +185,39 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
     @Override
     public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
         LogUtil.d(TAG, "onNestedPreScroll: ");
+        if (dy > 0) {
+            if (mCurOffset != 0) {
+                int scroll = mCurOffset - dy;
+                if (scroll < 0) {
+                    consumed[1] = mCurOffset;
+                    mCurOffset = 0;
+                } else {
+                    consumed[1] = dy;
+                    mCurOffset = scroll;
+                }
+
+                ViewCompat.offsetTopAndBottom(mHeaderView, -consumed[1]);
+                ViewCompat.offsetTopAndBottom(target, -consumed[1]);
+//                requestLayout();
+            }
+        } else {
+            if (!target.canScrollVertically(-1)) {
+                if (mCurOffset < mMaxOffset) {
+                    int scroll = mCurOffset - dy;
+                    if (scroll > mMaxOffset) {
+                        consumed[1] = -mMaxOffset + mCurOffset;
+                        mCurOffset = mMaxOffset;
+                    } else {
+                        consumed[1] = dy;
+                        mCurOffset = scroll;
+                    }
+
+                    ViewCompat.offsetTopAndBottom(mHeaderView, -consumed[1]);
+                    ViewCompat.offsetTopAndBottom(target, -consumed[1]);
+//                    requestLayout();
+                }
+            }
+        }
     }
 
     @Override
