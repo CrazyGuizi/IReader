@@ -1,2 +1,4 @@
-include ':app', ':common', ':httpprocessor'
+include ':compiler'
+include ':annotation'
+include ':app', ':common'
 rootProject.name='IReader'

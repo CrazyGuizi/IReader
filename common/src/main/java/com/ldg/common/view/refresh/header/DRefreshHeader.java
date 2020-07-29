@@ -31,6 +31,27 @@ public class DRefreshHeader extends FrameLayout implements IRefreshHeader {
         inflate(getContext(), R.layout.view_refresh_header, this);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width, height;
+        int wMode = MeasureSpec.getMode(widthMeasureSpec);
+        int wSize = MeasureSpec.getSize(widthMeasureSpec);
+
+        int hMode = MeasureSpec.getMode(heightMeasureSpec);
+        int hSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        if (wMode == MeasureSpec.AT_MOST) {
+            width = wSize;
+        }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+    }
+
     @NonNull
     @Override
     public View getHeader() {

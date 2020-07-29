@@ -1,7 +1,7 @@
 package com.ldg.ireader.api;
 
+import com.ldg.annotation.HttpAnnotation;
 import com.ldg.common.http.response.Response;
-import com.ldg.httpprocessor.HttpAnnotation;
 
 @HttpAnnotation(requestCode = ApiConstants.REQUEST_GET_BOOK_DETAIL)
 public class BookDetailResponse implements Response {

@@ -184,7 +184,7 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
 
     @Override
     public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
-        LogUtil.d(TAG, "onNestedPreScroll: ");
+        LogUtil.d(TAG, "onNestedPreScroll: " + dy);
         if (dy > 0) {
             if (mCurOffset != 0) {
                 int scroll = mCurOffset - dy;
@@ -198,7 +198,6 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
 
                 ViewCompat.offsetTopAndBottom(mHeaderView, -consumed[1]);
                 ViewCompat.offsetTopAndBottom(target, -consumed[1]);
-//                requestLayout();
             }
         } else {
             if (!target.canScrollVertically(-1)) {
@@ -214,21 +213,28 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent3 {
 
                     ViewCompat.offsetTopAndBottom(mHeaderView, -consumed[1]);
                     ViewCompat.offsetTopAndBottom(target, -consumed[1]);
-//                    requestLayout();
                 }
             }
         }
+
+        LogUtil.d(TAG, "the top is " + mHeaderView.getTop());
     }
 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
-        LogUtil.d(TAG, "onNestedPreFling: ");
+//        if (mCurOffset != 0 || mCurOffset != mMaxOffset) {
+//            Log.d(TAG, "onNestedPreFling: " + velocityY);
+//            return true;
+//        }
         return super.onNestedPreFling(target, velocityX, velocityY);
     }
 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
-        LogUtil.d(TAG, "onNestedFling: ");
+        if (mCurOffset != 0 || mCurOffset != mMaxOffset) {
+            Log.d(TAG, "onNestedFling: " + velocityY + "\tconsume" + consumed);
+            return true;
+        }
         return super.onNestedFling(target, velocityX, velocityY, consumed);
     }
 }
