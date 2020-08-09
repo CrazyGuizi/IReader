@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ldg.annotation.Route;
 import com.ldg.common.adapter.BaseRVAdapter;
 import com.ldg.common.util.ToastUtils;
 import com.ldg.common.view.BaseFragment;
@@ -17,11 +18,12 @@ import com.ldg.ireader.bookshelf.model.BookModel;
 import com.ldg.ireader.bookshelf.model.BookShelfMyBooksModel;
 import com.ldg.ireader.bookshelf.presenter.BookShelfPresenter;
 import com.ldg.ireader.bookshelf.ui.ReadActivity;
+import com.ldg.ireader.constant.RoutePath;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Route(value = RoutePath.FRAGMENT_BOOK_SHELF)
 public class BookShelfFragment extends BaseFragment implements BookShelfPresenter.BookShelfView {
 
     public static final String TAG = BookShelfFragment.class.getSimpleName();
