@@ -1,0 +1,26 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+repositories {
+    google()
+    jcenter()
+}
+
+dependencies {
+    implementation gradleApi()
+
+    implementation 'com.android.tools.build:gradle:3.5.3'
+    implementation 'com.android.tools.build:gradle-api:3.5.3'
+
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: uri('../repo'))
+        pom.groupId = 'com.ldg.router'
+        pom.artifactId = 'router_plugin'
+        pom.version = '1.0.0'
+    }
+}

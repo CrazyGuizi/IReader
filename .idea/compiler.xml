@@ -23,6 +23,7 @@
     <bytecodeTargetLevel>
       <module name="annotation" target="1.7" />
       <module name="compiler" target="1.7" />
+      <module name="gradlePlugin" target="1.7" />
       <module name="test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

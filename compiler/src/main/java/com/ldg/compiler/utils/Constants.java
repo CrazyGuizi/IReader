@@ -13,7 +13,7 @@ public class Constants {
     public static final String ROUTE_ANNOTATION = "com.ldg.annotation.Route";
     public static final String ACTIVITY = "android.app.Activity";
     public static final String ANDROID_X_FRAGMENT = "androidx.fragment.app.Fragment";
-    public static final CharSequence ROUTE_TABLE_NAME = "com.ldg.route.IRouteTable";
+    public static final CharSequence ROUTE_TABLE_NAME = "com.ldg.router.IRouteTable";
     public static final String ROUTE_TABLE = "RouteTable";
-    public static final String COMPILE_ROUTE_PACKET = "com.ldg.apt.route";
+    public static final String COMPILE_ROUTE_PACKET = "com.ldg.apt.router";
 }

@@ -40,6 +40,7 @@ public class RouteProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
         mModuleName = processingEnvironment.getOptions().get(Constants.MODULE_NAME);
+        System.out.println("编译modelName：" + mModuleName);
     }
 
     @Override

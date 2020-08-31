@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.ldg.router'
 
 android {
     compileSdkVersion 29
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.ldg.ireader"
-        minSdkVersion 15
+        minSdkVersion project.rootProject.ext.minSdkVersion
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -14,7 +15,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [moduleName: 'App']
                 includeCompileClasspath = true
             }
         }
@@ -54,5 +54,4 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
     api project(path: ':common')
     annotationProcessor project(path: ':compiler')
-
 }

@@ -4,13 +4,16 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        maven {
+            url uri('repo')
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2' // add plugin
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.ldg.router:router_plugin:1.0.0'
     }
 }
 
@@ -18,10 +21,17 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        maven{
+            url uri('repo')
+        }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    compileSdkVersion = 29
+    minSdkVersion = 15
 }

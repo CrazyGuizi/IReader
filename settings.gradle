@@ -1,3 +1,5 @@
+include ':router'
+include ':gradlePlugin'
 include ':compiler'
 include ':annotation'
 include ':app', ':common'

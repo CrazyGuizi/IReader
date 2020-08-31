@@ -1,4 +1,4 @@
-package com.ldg.route;
+package com.ldg.router;
 
 import java.util.Map;
 
