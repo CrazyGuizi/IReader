@@ -12,6 +12,7 @@ import com.ldg.annotation.Route;
 import com.ldg.common.adapter.BaseRVAdapter;
 import com.ldg.common.util.ToastUtils;
 import com.ldg.common.view.BaseFragment;
+import com.ldg.common.view.RefreshLayout;
 import com.ldg.ireader.R;
 import com.ldg.ireader.bookshelf.adapter.BookShelfAdapter;
 import com.ldg.ireader.bookshelf.model.BookModel;
@@ -32,6 +33,7 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
     private BookShelfAdapter mBookShelfAdapter;
     private List<BookModel> mBooks = new ArrayList<>();
     private BookShelfPresenter mPresenter;
+    private RefreshLayout mRefreshLayout;
 
     public static BookShelfFragment newInstance(Bundle args) {
         BookShelfFragment fragment = new BookShelfFragment();
@@ -47,7 +49,22 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
     @Override
     protected void initWidgets() {
         mRecyclerView = mRoot.findViewById(R.id.recycler_view);
+        mRefreshLayout = mRoot.findViewById(R.id.refresh_layout);
+        initRefreshLayout();
         initRecyclerView();
+    }
+
+    private void initRefreshLayout() {
+        mRefreshLayout.setRefreshListener(new RefreshLayout.RefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPresenter.getMyBooks("1");
+                mRefreshLayout.postDelayed(() -> {
+
+                    mRefreshLayout.setRefresh(false);
+                }, 3000);
+            }
+        });
     }
 
     @Override
@@ -96,9 +113,12 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
 
     @Override
     public void updateBooks(BookShelfMyBooksModel booksModel) {
+        mRefreshLayout.setRefresh(false);
         if (booksModel != null && booksModel.getBooks() != null) {
             mBooks = booksModel.getBooks();
             mBookShelfAdapter.setNewData(mBooks);
+        } else {
+            ToastUtils.show(getContext(), "没有更多内容了~");
         }
     }
 
@@ -109,6 +129,7 @@ public class BookShelfFragment extends BaseFragment implements BookShelfPresente
 
     @Override
     public void showException(String msg) {
+        mRefreshLayout.setRefresh(false);
         ToastUtils.show(getContext(), msg);
         BookShelfMyBooksModel booksModel = new BookShelfMyBooksModel();
         List<BookModel> list = new ArrayList<>();

@@ -28,7 +28,7 @@ public class BookShelfPresenter extends MvpBasePresenter<BookShelfPresenter.Book
 
             @Override
             public void onMyBookInfo(BookShelfMyBooksModel bookModel) {
-                if (bookModel != null && isViewAttached()) {
+                if (isViewAttached()) {
                     getView().updateBooks(bookModel);
                 }
             }

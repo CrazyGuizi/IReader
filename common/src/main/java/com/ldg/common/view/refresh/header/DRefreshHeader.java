@@ -1,9 +1,12 @@
 package com.ldg.common.view.refresh.header;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +16,7 @@ import com.ldg.common.view.refresh.IRefreshHeader;
 
 public class DRefreshHeader extends FrameLayout implements IRefreshHeader {
 
+    private TextView mTvRefresh;
 
     public DRefreshHeader(@NonNull Context context) {
         this(context, null);
@@ -28,7 +32,9 @@ public class DRefreshHeader extends FrameLayout implements IRefreshHeader {
     }
 
     private void initView() {
-        inflate(getContext(), R.layout.view_refresh_header, this);
+        View inflate = inflate(getContext(), R.layout.view_refresh_header, this);
+        mTvRefresh = inflate.findViewById(R.id.tvRefresh);
+        setBackgroundColor(Color.GREEN);
     }
 
     @Override
@@ -56,5 +62,45 @@ public class DRefreshHeader extends FrameLayout implements IRefreshHeader {
     @Override
     public View getHeader() {
         return this;
+    }
+
+    @Override
+    public boolean isScrollContent() {
+        return true;
+    }
+
+    @Override
+    public void onRefreshTrigger() {
+        mTvRefresh.setText("松手立即刷新");
+    }
+
+    @Override
+    public void onRefreshShut() {
+
+    }
+
+    @Override
+    public void onRefreshCancel() {
+
+    }
+
+    @Override
+    public void onRefreshStart() {
+
+    }
+
+    @Override
+    public void onRefreshFinish() {
+        mTvRefresh.setText("刷新成功");
+    }
+
+    @Override
+    public void onRefreshEnd() {
+        mTvRefresh.setText("我是刷新条");
+    }
+
+    @Override
+    public void onOffsetChange(float percent) {
+
     }
 }
