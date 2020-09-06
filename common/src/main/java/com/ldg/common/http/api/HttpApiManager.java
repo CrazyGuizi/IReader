@@ -18,7 +18,7 @@ public class HttpApiManager {
         if (modules != null && modules.length > 0) {
             for (String module : modules) {
                 try {
-                    Class<?> aClass = classLoader.loadClass("com.ldg.apt.http.HttpApiImpl_" + module);
+                    Class<?> aClass = classLoader.loadClass("com.ldg.apt.http.HttpApiImpl_" + module.toLowerCase());
                     IHttpApi httpApi = (IHttpApi) aClass.newInstance();
                     httpApi.addApi(API_MAP);
                 } catch (ClassNotFoundException e) {

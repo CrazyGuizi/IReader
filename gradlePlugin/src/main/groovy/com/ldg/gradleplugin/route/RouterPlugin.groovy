@@ -16,7 +16,7 @@ public class RouterPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        println '开始我的插件'
+        println '开始我的插件:' + project.name
         def ext = project.rootProject.ext
         Project router = project.rootProject.findProject(PROJECT_ROUTER)
         Project compiler = project.rootProject.findProject(PROJECT_COMPILER)
@@ -32,13 +32,10 @@ public class RouterPlugin implements Plugin<Project> {
             ]
 
             android.defaultConfig.javaCompileOptions.annotationProcessorOptions.arguments(options)
-            android.productFlavors.all {
-                ProductFlavor flavor -> flavor.javaCompileOptions.annotationProcessorOptions.arguments(options)
-            }
 
-//            if (project.plugins.hasPlugin(AppPlugin)) {
-//                android.registerTransform(new RouterTransform(project))
-//            }
+            if (project.plugins.hasPlugin(AppPlugin)) {
+                android.registerTransform(new RouterTransform(project))
+            }
         }
     }
 }

@@ -2,11 +2,24 @@ package com.ldg.gradleplugin.route
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
+import com.android.utils.FileUtils
+import com.google.common.collect.ImmutableList
 import jdk.internal.org.objectweb.asm.ClassReader
-import jdk.internal.org.objectweb.asm.ClassWriter
+import org.apache.commons.codec.digest.DigestUtils
 import org.gradle.api.Project
+import org.objectweb.asm.Opcodes
+
+import java.util.jar.JarFile
 
 public class RouterTransform extends Transform {
+    public static final String APT_CLASS = "com/ldg/router/AptHub.class"
+    public static final String APT_ROUTER_TABLE_PACKAGE = "com/ldg/apt/router"
+    public static final String ROUTER_TABLE = "com/ldg/router/IRouteTable"
+
+    public static File registerTargetClassFile
+
+    public Map<String, List<RouterRecord>> mRecordMap = [:]
+    static List<RouterRecord> mCurModuleRecords
 
     Project mProject
 
@@ -46,66 +59,207 @@ public class RouterTransform extends Transform {
         return true;
     }
 
+    List<RouterRecord> getRecords(String projectName) {
+        def records = mRecordMap.get(projectName)
+        if (records == null) {
+            mRecordMap[projectName] = ImmutableList.of(
+                    new RouterRecord(ROUTER_TABLE)
+            )
+        }
+
+        return mRecordMap[projectName]
+    }
+
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
-        //消费型输入，可以从中获取jar包和class文件夹路径。需要输出给下一个任务
-        Collection<TransformInput> inputs = transformInvocation.getInputs();
-        //OutputProvider管理输出路径，如果消费型输入为空，你会发现OutputProvider == null
-        TransformOutputProvider outputProvider = transformInvocation.getOutputProvider();
+        println ' --------- RouterTransform begin ---------'
 
-        for (TransformInput input : inputs) {
-            for (JarInput jarInput : input.getJarInputs()) {
-                File dest = outputProvider.getContentLocation(
-                        jarInput.getFile().getAbsolutePath(),
-                        jarInput.getContentTypes(),
-                        jarInput.getScopes(),
-                        Format.JAR);
-                //将修改过的字节码copy到dest，就可以实现编译期间干预字节码的目的了
-                org.apache.commons.io.FileUtils.copyFile(jarInput.getFile(), dest);
+        mCurModuleRecords = getRecords(mProject.name)
+
+        def incremental = transformInvocation.incremental
+        if (!incremental) {
+            transformInvocation.outputProvider.deleteAll()
+        }
+
+        transformInvocation.inputs.each {
+            TransformInput input ->
+                if (!input.jarInputs.empty) {
+                    input.jarInputs.each {
+                        JarInput jarInput ->
+                            File dest = getJarDestFile(transformInvocation, jarInput)
+                            if (incremental) {
+                                switch (jarInput.status) {
+                                    case Status.NOTCHANGED:
+                                        break
+                                    case Status.ADDED:
+                                    case Status.CHANGED:
+                                        transformJar(jarInput, dest)
+                                        break
+                                    case Status.REMOVED:
+                                        dest.deleteOnExit()
+                                        break
+                                }
+                            } else {
+                                transformJar(jarInput, dest)
+                            }
+                    }
+                }
+
+
+                if (!input.directoryInputs.empty) {
+                    input.directoryInputs.each {
+                        def dest = transformInvocation.outputProvider.getContentLocation(
+                                it.name,
+                                it.contentTypes,
+                                it.scopes,
+                                Format.DIRECTORY
+                        )
+
+                        if (incremental) {
+                            def srcDirPath = it.file.absolutePath
+                            def destDirPath = dest.absolutePath
+                            it.changedFiles.entrySet().each {
+                                { File inputFile, Status status ->
+                                    def destFilePath = inputFile.absolutePath.replace(srcDirPath, destDirPath)
+                                    def destFile = new File(destFilePath)
+                                    switch (status) {
+                                        case Status.NOTCHANGED:
+                                            break
+                                        case Status.ADDED:
+                                        case Status.CHANGED:
+                                            try {
+                                                org.apache.commons.io.FileUtils.touch(destFile)
+                                            } catch (IOException e) {
+                                            }
+                                            transformSingleFile(inputFile, destFile)
+                                            break
+
+                                        case Status.REMOVED:
+                                            org.apache.commons.io.FileUtils.deleteQuietly(destFile)
+                                            break
+                                    }
+                                }
+                            }
+                        } else {
+                            transformDir(it, dest)
+                        }
+                    }
+                }
+        }
+
+        if (registerTargetClassFile) {
+            println "注入RouterTable处理类：aptHub handle" + registerTargetClassFile.absolutePath
+            RouterInject.handle(registerTargetClassFile, mCurModuleRecords)
+        } else {
+            println "没找到aptHub"
+        }
+    }
+
+    private File getJarDestFile(TransformInvocation transformInvocation, JarInput jarInput) {
+        def destName = jarInput.name
+        if (destName.endsWith(".jar")) {
+            destName = "${destName.substring(0, destName.length() - 4)}_${DigestUtils.md5Hex(jarInput.file.absolutePath)}"
+        }
+
+        return transformInvocation.outputProvider.getContentLocation(
+                destName,
+                jarInput.contentTypes,
+                jarInput.scopes,
+                Format.JAR
+        )
+    }
+
+    void transformJar(JarInput jarInput, File destFile) {
+
+        def shouldScan = excludeJar.each {
+            if (jarInput.name.contains(it)) {
+                return false
             }
-            for (DirectoryInput directoryInput : input.getDirectoryInputs()) {
-                File dest = outputProvider.getContentLocation(directoryInput.getName(),
-                        directoryInput.getContentTypes(), directoryInput.getScopes(),
-                        Format.DIRECTORY);
-                //将修改过的字节码copy到dest，就可以实现编译期间干预字节码的目的了
-                //FileUtils.copyDirectory(directoryInput.getFile(), dest)
-                transformDir(directoryInput.getFile(), dest);
+            return true
+        }
+
+        if (shouldScan) {
+            println '可以扫描的jar包名: ' + jarInput.name + "\t路径:" + jarInput.file.absolutePath
+
+            scanJar(jarInput.file, destFile)
+        }
+        FileUtils.copyFile(jarInput.file, destFile)
+    }
+
+    void scanJar(File src, File dest) {
+        if (src && src.exists()) {
+            def jarFile = new JarFile(src)
+            def entries = jarFile.entries()
+            while (entries.hasMoreElements()) {
+                def element = entries.nextElement()
+                if (element.name == APT_CLASS) {
+                    registerTargetClassFile = dest
+                } else if (element.name.startsWith(APT_ROUTER_TABLE_PACKAGE)) {
+                    def inputStream = jarFile.getInputStream(element)
+                    inputStream.withCloseable {
+                        visitClass(it)
+                    }
+                }
+            }
+            jarFile.close()
+        }
+    }
+
+    void transformSingleFile(File inputFile, File destFile) {
+        if (inputFile.isFile() && shouldScan(inputFile)) {
+            println '扫描文件：' + inputFile.absolutePath
+            visitClass(new FileInputStream(inputFile))
+        }
+
+        FileUtils.copyFile(inputFile, destFile)
+    }
+
+    void transformDir(DirectoryInput directoryInput, File dest) {
+        directoryInput.file.eachFileRecurse {
+            File file ->
+                if (file.isFile() && shouldScan(file)) {
+                    println '扫描文件：' + file.absolutePath
+                    visitClass(new FileInputStream(file))
+                }
+        }
+
+        FileUtils.copyDirectory(directoryInput.file, dest)
+    }
+
+    boolean shouldScan(File inputFile) {
+        return inputFile.absolutePath.replaceAll("\\\\", "/").contains(APT_ROUTER_TABLE_PACKAGE)
+    }
+
+    Set<String> excludeJar = ["com.android.support", "android.arch.", "androidx."]
+
+    private void visitClass(InputStream it) {
+        ClassReader reader = new ClassReader(it)
+
+        RouterVisitor visitor = new RouterVisitor()
+        reader.accept(visitor, 0)
+        it.close()
+    }
+
+    public static class RouterVisitor extends jdk.internal.org.objectweb.asm.ClassVisitor {
+        RouterVisitor() {
+            super(Opcodes.ASM5)
+        }
+
+        @Override
+        void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            super.visit(version, access, name, signature, superName, interfaces)
+            if (interfaces != null) {
+                mCurModuleRecords.each {
+                    RouterRecord record ->
+                        interfaces.each {
+                            if (it == record.templateName) {
+                                record.aptClass.add(name)
+                            }
+                        }
+                }
             }
         }
     }
 
-    private static void transformDir(File input, File dest) throws IOException {
-        if (dest.exists()) {
-            org.apache.commons.io.FileUtils.forceDelete(dest);
-        }
-        org.apache.commons.io.FileUtils.forceMkdir(dest);
-        String srcDirPath = input.getAbsolutePath();
-        String destDirPath = dest.getAbsolutePath();
-        for (File file : input.listFiles()) {
-            String destFilePath = file.getAbsolutePath().replace(srcDirPath, destDirPath);
-            File destFile = new File(destFilePath);
-            if (file.isDirectory()) {
-                transformDir(file, destFile);
-            } else if (file.isFile()) {
-                org.apache.commons.io.FileUtils.touch(destFile);
-                weave(file.getAbsolutePath(), destFile.getAbsolutePath());
-            }
-        }
-    }
-
-    private static void weave(String inputPath, String outputPath) {
-        try {
-            FileInputStream is = new FileInputStream(inputPath);
-            ClassReader cr = new ClassReader(is);
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-//            AsmClassAdapter adapter = new AsmClassAdapter(cw);
-//            cr.accept(adapter, ClassReader.EXPAND_FRAMES);
-            FileOutputStream fos = new FileOutputStream(outputPath);
-            fos.write(cw.toByteArray());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

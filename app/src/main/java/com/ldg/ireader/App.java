@@ -9,7 +9,7 @@ import com.ldg.common.http.api.HttpApiManager;
 public class App extends BaseApplication {
 
     public static Context sContext;
-    private static final String[] modules = new String[]{"App", "Common"};
+    private static final String[] modules = new String[]{"app", "common"};
 
 
     public static Context get() {
@@ -20,6 +20,7 @@ public class App extends BaseApplication {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         sContext = this;
+
         HttpApiManager.init(modules);
     }
 }
