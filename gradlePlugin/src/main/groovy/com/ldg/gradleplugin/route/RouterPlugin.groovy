@@ -20,8 +20,9 @@ public class RouterPlugin implements Plugin<Project> {
         def ext = project.rootProject.ext
         Project router = project.rootProject.findProject(PROJECT_ROUTER)
         Project compiler = project.rootProject.findProject(PROJECT_COMPILER)
+        println "路由module：" + router
         if (router && compiler) {
-            project.dependencies.add('implementation', router)
+//            project.dependencies.add('implementation', router)
             project.dependencies.add('annotationProcessor', compiler)
         }
 

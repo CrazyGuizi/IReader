@@ -54,4 +54,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
     api project(path: ':common')
     annotationProcessor project(path: ':compiler')
+    api project(":router")
 }
