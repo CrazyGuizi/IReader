@@ -1,6 +1,5 @@
 package com.ldg.gradleplugin.route
 
-import com.android.build.api.dsl.model.ProductFlavor
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
