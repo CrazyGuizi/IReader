@@ -3,4 +3,4 @@
 
 ## Demo
 
-<video src="https://github.com/CrazyGuizi/IReader/blob/dev/desc/read_demo.mp4" controls="controls" width="500" height="300">您的浏览器不支持播放该视频！</video>
+<iframe height=498 width=510 src="https://github.com/CrazyGuizi/IReader/blob/dev/desc/read_demo.mp4" frameborder=0 allowfullscreen></iframe>
